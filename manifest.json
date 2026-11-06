@@ -2,7 +2,7 @@
   "name": "برنامه شخصی ۳۰ روزه",
   "short_name": "۳۰ روزه",
   "description": "برنامه تمرین، تغذیه و فستینگ شخصی‌سازی‌شده",
-  "start_url": "./",
+  "start_url": "./index.html?mode=standalone",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#eef2f9",
