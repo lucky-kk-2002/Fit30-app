@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#2f7cf6">
+<meta name="description" content="برنامه شخصی ۳۰ روزه تمرین و تغذیه">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="۳۰ روزه">
+<meta name="format-detection" content="telephone=no">
+<title>برنامه شخصی ۳۰ روزه</title>
+
+<!-- PWA Manifest + Icons (built dynamically) -->
+<link rel="manifest" id="manifestLink">
+<script>
+(function(){
+  var iconSvg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232f7cf6'/><stop offset='1' stop-color='%2312b886'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(%23g)'/><text x='256' y='340' font-family='Arial,sans-serif' font-size='260' font-weight='900' fill='white' text-anchor='middle'>۳۰</text></svg>";
+  var iconUri = "data:image/svg+xml," + encodeURIComponent(iconSvg);
+  var manifest = {
+    name: "برنامه شخصی ۳۰ روزه",
+    short_name: "۳۰ روزه",
+    description: "برنامه تمرین، تغذیه و فستینگ شخصی‌سازی‌شده",
+    start_url: ".",
+    scope: ".",
+    display: "standalone",
+    display_override: ["standalone", "fullscreen"],
+    orientation: "portrait",
+    background_color: "#eef2f9",
+    theme_color: "#2f7cf6",
+    lang: "fa",
+    dir: "rtl",
+    icons: [
+      { src: iconUri, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+      { src: iconUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  };
+  var manifestUri = "data:application/manifest+json," + encodeURIComponent(JSON.stringify(manifest));
+  document.getElementById('manifestLink').href = manifestUri;
+
+  var fav = document.createElement('link');
+  fav.rel = 'icon'; fav.type = 'image/svg+xml'; fav.href = iconUri;
+  document.head.appendChild(fav);
+
+  var apple = document.createElement('link');
+  apple.rel = 'apple-touch-icon'; apple.href = iconUri;
+  document.head.appendChild(apple);
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f9; --card:#fff; --ink:#15202e; --muted:#6b7a90;
+    --line:#e5ebf4; --accent:#2f7cf6; --accent-2:#12b886;
+    --accent-3:#f59f00; --danger:#e03131;
+    --radius:22px; --shadow:0 6px 28px rgba(21,32,46,.09);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Vazirmatn', system-ui, -apple-system, Tahoma, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.7;
+    font-size:15px; padding:10px 10px calc(14px + env(safe-area-inset-bottom));
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+    min-height:100dvh;
+    touch-action: manipulation;
+  }
+  button{touch-action: manipulation; -webkit-user-select:none; user-select:none;}
+
+  /* ============ SPLASH ============ */
+  .splash{
+    min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:26px; padding:24px; padding-top:calc(24px + env(safe-area-inset-top));
+    text-align:center;
+  }
+  .slogan{
+    margin:0; font-size:clamp(24px, 8vw, 40px); font-weight:700;
+    line-height:1.6; letter-spacing:-.4px;
+    background:linear-gradient(135deg,#2f7cf6,#12b886);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:pop .5s ease;
+  }
+  @keyframes pop{from{opacity:0; transform:translateY(10px) scale(.96);} to{opacity:1; transform:none;}}
+  .start-btn{
+    padding:16px 60px;
+    background:linear-gradient(135deg,var(--accent),#12b886);
+    color:#fff; border:none; border-radius:15px;
+    font-family:inherit; font-size:17px; font-weight:700;
+    cursor:pointer; transition:.18s;
+    box-shadow:0 8px 24px rgba(47,124,246,.32);
+  }
+  .start-btn:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(47,124,246,.4);}
+  .start-btn:active{transform:scale(.97);}
+
+  .install-btn{
+    background:rgba(47,124,246,.1);
+    color:var(--accent);
+    border:1.5px solid var(--accent);
+    padding:10px 22px;
+    border-radius:12px;
+    font-family:inherit; font-size:13px; font-weight:700;
+    cursor:pointer; transition:.18s;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .install-btn:hover{background:rgba(47,124,246,.18);}
+  .install-btn:active{transform:scale(.97);}
+
+  .ios-hint{
+    max-width:320px;
+    font-size:12px; color:var(--muted);
+    background:rgba(255,255,255,.7);
+    border:1px dashed var(--line);
+    border-radius:12px;
+    padding:10px 14px;
+    line-height:1.8;
+  }
+  .ios-hint b{color:var(--accent);}
+
+  /* ============ ONBOARDING ============ */
+  .onboarding{
+    min-height:100vh; min-height:100dvh;
+    padding:24px 14px calc(24px + env(safe-area-inset-bottom));
+    padding-top:calc(24px + env(safe-area-inset-top));
+  }
+  .onb-wrap{max-width:540px; margin:0 auto;}
+  .back-link{
+    background:none; border:none; color:var(--muted); font-family:inherit;
+    font-size:12.5px; font-weight:600; cursor:pointer; padding:4px 0;
+    margin-bottom:10px;
+  }
+  .back-link:hover{color:var(--accent);}
+  .onb-title{font-size:22px; font-weight:700; margin:0 0 4px; text-align:center;}
+  .onb-sub{font-size:13px; color:var(--muted); margin:0 0 22px; text-align:center;}
+  .onb-card{
+    background:#fff; border-radius:16px; padding:16px;
+    box-shadow:var(--shadow); margin-bottom:14px;
+  }
+  .onb-card h3{
+    font-size:14px; margin:0 0 12px;
+    padding-bottom:10px; border-bottom:1px dashed var(--line);
+    display:flex; align-items:center; gap:6px;
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .field label{
+    display:block; font-size:12px; color:var(--muted);
+    font-weight:600; margin-bottom:5px;
+  }
+  .field input{
+    width:100%; border:1.5px solid var(--line); border-radius:11px;
+    padding:11px 12px; font-family:inherit; font-size:14px;
+    color:var(--ink); background:#fafcff; transition:.18s;
+  }
+  .field input:focus{
+    outline:none; border-color:var(--accent); background:#fff;
+    box-shadow:0 0 0 3px rgba(47,124,246,.12);
+  }
+  .bmi-inline{
+    margin-top:10px; padding:9px 12px; border-radius:10px;
+    background:#f1f5fb; font-size:12.5px; color:var(--muted);
+    font-weight:600; display:none;
+  }
+  .bmi-inline.show{display:block;}
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .option-btn{
+    border:1.5px solid var(--line); background:#fafcff;
+    color:var(--ink); padding:12px 8px; border-radius:11px;
+    font-family:inherit; font-size:13px; font-weight:600;
+    cursor:pointer; transition:.18s; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    min-height:56px; justify-content:center;
+  }
+  .option-btn small{font-size:10.5px; color:var(--muted); font-weight:400;}
+  .option-btn.active{
+    background:linear-gradient(135deg,var(--accent),#5b9bff);
+    border-color:transparent; color:#fff;
+    box-shadow:0 4px 12px rgba(47,124,246,.25);
+  }
+  .option-btn.active small{color:rgba(255,255,255,.85);}
+  .option-btn:active{transform:scale(.97);}
+  .build-btn{
+    width:100%; padding:16px; margin-top:8px;
+    background:linear-gradient(135deg,var(--accent),#12b886);
+    border:none; border-radius:13px; color:#fff;
+    font-family:inherit; font-size:15px; font-weight:700;
+    cursor:pointer; transition:.18s;
+    box-shadow:0 6px 20px rgba(47,124,246,.3);
+  }
+  .build-btn:active{transform:scale(.98);}
+
+  /* ============ PROGRAM SHELL ============ */
+  .shell{
+    max-width:900px; margin:0 auto;
+    background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+    border-radius:var(--radius) var(--radius) 0 0;
+    padding:14px 16px 12px;
+    padding-top:calc(14px + env(safe-area-inset-top));
+  }
+  .hdr-top{display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+  .back-btn, .settings-btn{
+    border:1.5px solid var(--line); background:#fff; color:var(--muted);
+    padding:6px 12px; border-radius:10px; font-family:inherit;
+    font-size:12px; font-weight:600; cursor:pointer; transition:.18s;
+  }
+  .back-btn:hover, .settings-btn:hover{color:var(--accent); border-color:var(--accent);}
+  .settings-btn{margin-right:auto; font-size:14px; padding:5px 10px;}
+  h1{font-size:17px; margin:0 0 2px; font-weight:700;}
+  .sub{font-size:12px; color:var(--muted); margin:0 0 12px;}
+  .bar{height:10px; background:#e3eaf5; border-radius:99px; overflow:hidden;}
+  .bar i{
+    display:block; height:100%; width:0%;
+    background:linear-gradient(90deg,#2f7cf6,#12b886);
+    border-radius:99px; transition:width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .hud-txt{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; color:var(--muted); margin-top:6px; font-weight:500;
+  }
+  .hud-txt b{color:var(--accent); font-weight:700;}
+
+  .profile-bar{
+    display:flex; gap:8px; padding:10px 16px;
+    background:#fafcff; border-bottom:1px solid var(--line);
+    overflow-x:auto; scrollbar-width:none;
+  }
+  .profile-bar::-webkit-scrollbar{display:none;}
+  .pb-item{
+    flex:0 0 auto; padding:6px 12px; background:#fff;
+    border:1px solid var(--line); border-radius:10px;
+    font-size:10.5px; display:flex; flex-direction:column; line-height:1.4;
+  }
+  .pb-item span{color:var(--muted); font-weight:500;}
+  .pb-item b{color:var(--accent); font-weight:700; font-size:13px;}
+
+  .tools{display:flex; gap:8px; padding:10px 16px 4px;}
+  .tool{
+    flex:1; border:1.5px solid var(--line); background:#fff; color:var(--ink);
+    padding:9px; border-radius:12px; font-family:inherit; font-size:12.5px;
+    font-weight:600; cursor:pointer; transition:.18s;
+  }
+  .tool:active{transform:scale(.97);}
+  .tool.danger{color:var(--danger); border-color:#ffd7d7;}
+
+  /* ============ WEEKS ============ */
+  main{padding:10px 12px 4px; display:flex; flex-direction:column; gap:12px;}
+  .week{
+    border:1.5px solid var(--line); border-radius:16px;
+    overflow:hidden; background:#fff;
+  }
+  .week.hide{display:none;}
+  .week.complete{border-color:#b8f0db;}
+  .week-head{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:12px 14px;
+    background:linear-gradient(135deg,#eef4ff,#e4eeff);
+    border-bottom:1px solid var(--line);
+    cursor:pointer; user-select:none; transition:background .15s;
+  }
+  .week.complete .week-head{background:linear-gradient(135deg,#e6fbf3,#d6f7ea);}
+  .week-head:hover{filter:brightness(.98);}
+  .week-title{display:flex; flex-direction:column; line-height:1.5; min-width:0; flex:1;}
+  .wt{font-size:13.5px; font-weight:700;}
+  .wsub{font-size:11px; color:var(--muted); font-weight:400;}
+  .week-right{display:flex; align-items:center; gap:8px; flex:0 0 auto;}
+  .week-progress{
+    font-size:11.5px; font-weight:700;
+    color:var(--accent); background:#fff;
+    padding:4px 11px; border-radius:99px;
+    font-variant-numeric:tabular-nums;
+    box-shadow:0 1px 4px rgba(21,32,46,.06);
+  }
+  .week.complete .week-progress{color:#0b8f6a;}
+  .chev{
+    font-size:11px; color:var(--muted);
+    transition:transform .25s ease; display:inline-block;
+  }
+  .week.open .chev{transform:rotate(180deg); color:var(--accent);}
+  .week-body{display:none;}
+  .week.open .week-body{display:block;}
+
+  .daybar{
+    display:flex; gap:6px; overflow-x:auto; padding:10px 12px;
+    background:#fafcff; border-bottom:1px solid var(--line);
+    scrollbar-width:none;
+  }
+  .daybar::-webkit-scrollbar{display:none;}
+  .dchip{
+    flex:0 0 auto; border:1.5px solid var(--line); background:#fff;
+    color:var(--muted); padding:6px 13px; border-radius:99px;
+    font-family:inherit; font-size:12px; font-weight:700;
+    cursor:pointer; transition:.18s; white-space:nowrap;
+  }
+  .dchip.active{
+    background:linear-gradient(135deg,var(--accent),#5b9bff);
+    border-color:transparent; color:#fff;
+    box-shadow:0 3px 10px rgba(47,124,246,.25);
+  }
+  .dchip:active{transform:scale(.96);}
+
+  .week-days .day{
+    background:#fff; border-bottom:1px solid var(--line);
+    border-radius:0; overflow:hidden;
+  }
+  .week-days .day:last-child{border-bottom:none;}
+  .week-days .day.complete{background:#f7fffc;}
+  .week-days .day.hide{display:none;}
+
+  summary{
+    list-style:none; display:flex; align-items:center; gap:11px;
+    padding:12px 14px; cursor:pointer; user-select:none;
+    transition:background .15s;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary:active{background:#f4f8fe;}
+  .dn{
+    flex:0 0 auto; width:34px; height:34px;
+    display:grid; place-items:center; border-radius:10px;
+    background:linear-gradient(135deg,#eaf2ff,#dbe9ff);
+    color:var(--accent); font-weight:700; font-size:13.5px;
+  }
+  .day.complete .dn{background:linear-gradient(135deg,#d9f7ec,#c3f2e1); color:#0b8f6a;}
+  .dt{flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.45;}
+  .dtitle{font-weight:600; font-size:13.8px;}
+  .dmeta{font-size:11px; color:var(--muted); font-weight:400;}
+  .dprog{
+    flex:0 0 auto; font-size:11px; font-weight:600;
+    color:var(--muted); background:#f1f5fb;
+    padding:3px 9px; border-radius:99px;
+    font-variant-numeric:tabular-nums;
+  }
+  .dprog.done{background:#d9f7ec; color:#0b8f6a;}
+
+  .dbody{
+    padding:2px 14px 16px; border-top:1px dashed var(--line);
+    animation:fade .25s ease;
+  }
+  @keyframes fade{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;}}
+  .block{margin-top:14px;}
+  .block h3{
+    font-size:12.5px; margin:0 0 8px; color:var(--muted); font-weight:700;
+    display:flex; align-items:center; gap:6px;
+  }
+  .check{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:8px 10px; margin-bottom:5px; border-radius:10px;
+    background:#f8fafd; cursor:pointer; transition:background .15s;
+  }
+  .check:active{background:#eef4fd;}
+  .check input{
+    appearance:none; -webkit-appearance:none;
+    width:21px; height:21px; flex:0 0 auto; margin:1px 0 0;
+    border:2px solid #c7d4e6; border-radius:7px; background:#fff;
+    position:relative; cursor:pointer; transition:.16s;
+  }
+  .check input:checked{background:var(--accent); border-color:var(--accent);}
+  .check input:checked::after{
+    content:''; position:absolute; top:50%; left:50%;
+    width:5px; height:10px; border:solid #fff; border-width:0 2px 2px 0;
+    transform:translate(-50%,-62%) rotate(45deg);
+  }
+  .check input:checked + span{
+    color:#9aa8bc; text-decoration:line-through;
+    text-decoration-thickness:1.5px;
+  }
+  .check span{font-size:13.3px; flex:1; transition:.18s;}
+  .tip{
+    margin:14px 0 0; font-size:12.2px; color:#8a6d1f;
+    background:#fff9e8; border-right:3px solid var(--accent-3);
+    padding:9px 11px; border-radius:10px; line-height:1.65;
+  }
+  .note{
+    width:100%; min-height:72px;
+    border:1.5px solid var(--line); border-radius:10px;
+    padding:9px 11px; font-family:inherit; font-size:13px;
+    line-height:1.75; color:var(--ink); background:#fafcff;
+    resize:vertical; transition:.18s;
+  }
+  .note::placeholder{color:#b0bcd0;}
+  .note:focus{
+    outline:none; border-color:var(--accent); background:#fff;
+    box-shadow:0 0 0 3px rgba(47,124,246,.12);
+  }
+  footer{
+    padding:18px 18px calc(20px + env(safe-area-inset-bottom));
+    font-size:11.5px; color:var(--muted); text-align:center;
+    line-height:1.8; border-top:1px solid var(--line);
+  }
+
+  /* ============ MODAL ============ */
+  .modal{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(15,25,40,.5);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal.hidden{display:none;}
+  .modal-content{
+    background:#fff; border-radius:20px; padding:20px;
+    width:100%; max-width:380px;
+    box-shadow:0 20px 60px rgba(15,25,40,.25);
+    max-height:90vh; overflow-y:auto;
+  }
+  .modal-content h3{
+    margin:0 0 16px; font-size:16px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .modal-close{
+    background:none; border:none; font-size:24px; color:var(--muted);
+    cursor:pointer; padding:0; line-height:1;
+  }
+  .modal-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 0; border-bottom:1px solid var(--line);
+    font-size:13.5px; gap:10px;
+  }
+  .modal-row:last-of-type{border-bottom:none;}
+  .modal-row select{
+    border:1.5px solid var(--line); border-radius:9px;
+    padding:6px 10px; font-family:inherit; font-size:13px;
+    background:#fff; color:var(--ink);
+  }
+  .switch{position:relative; display:inline-block; width:44px; height:24px; flex:0 0 auto;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{
+    position:absolute; inset:0; background:#c7d4e6; border-radius:24px;
+    transition:.2s; cursor:pointer;
+  }
+  .slider::before{
+    content:''; position:absolute; height:18px; width:18px;
+    left:3px; bottom:3px; background:#fff; border-radius:50%;
+    transition:.2s;
+  }
+  .switch input:checked + .slider{background:var(--accent);}
+  .switch input:checked + .slider::before{transform:translateX(20px);}
+  .modal-actions{display:flex; gap:8px; margin-top:16px;}
+  .modal-actions button{
+    flex:1; padding:11px; border-radius:11px;
+    font-family:inherit; font-size:13.5px; font-weight:700;
+    cursor:pointer; transition:.18s;
+    border:1.5px solid var(--line); background:#fff; color:var(--ink);
+  }
+  .modal-actions button.danger{color:var(--danger); border-color:#ffd7d7;}
+  .modal-actions button.primary{
+    background:linear-gradient(135deg,var(--accent),#5b9bff);
+    border-color:transparent; color:#fff;
+  }
+
+  /* ============ PWA STANDALONE MODE ============ */
+  @media (display-mode: standalone){
+    body{
+      padding:0;
+      background:var(--card);
+    }
+    .shell{
+      border-radius:0; box-shadow:none; max-width:100%;
+    }
+    header{border-radius:0;}
+    .splash{
+      background:var(--bg);
+    }
+  }
+
+  @media (min-width:640px){
+    body{font-size:15.5px; padding:16px 16px calc(16px + env(safe-area-inset-bottom));}
+    header{padding:18px 24px 14px;}
+    h1{font-size:20px;}
+    .tools{padding-right:24px; padding-left:24px;}
+    main{padding:14px 20px 6px; gap:14px;}
+    .check span{font-size:14px;}
+    .dtitle{font-size:14.5px;}
+    .wt{font-size:14.5px;}
+    .note{font-size:13.5px;}
+    .onb-title{font-size:24px;}
+    .option-btn{font-size:13.5px; min-height:60px;}
+  }
+  @media (display-mode: standalone) and (min-width:640px){
+    body{padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SPLASH ============ -->
+<section class="splash" id="splash">
+  <h1 class="slogan">خواستن ، توانستن است💪</h1>
+  <button class="start-btn" id="startBtn">شروع</button>
+  <button class="install-btn" id="installBtn" hidden>📲 نصب روی دستگاه</button>
+  <div class="ios-hint" id="iosHint" hidden>
+    برای نصب: دکمه <b>اشتراک‌گذاری ⬆️</b> پایین مرورگر را بزنید و گزینه <b>«Add to Home Screen»</b> یا <b>«افزودن به صفحه اصلی»</b> را انتخاب کنید.
+  </div>
+</section>
+
+<!-- ============ ONBOARDING ============ -->
+<section class="onboarding" id="onboarding" hidden>
+  <div class="onb-wrap">
+    <button class="back-link" id="onbBack">← بازگشت</button>
+    <h2 class="onb-title">بیایید برنامه‌ات را بسازیم</h2>
+    <p class="onb-sub">۴ سوال کوتاه تا برنامه شخصی ۳۰ روزه</p>
+
+    <div class="onb-card">
+      <h3>📏 اطلاعات بدنی</h3>
+      <div class="field-row">
+        <div class="field">
+          <label>قد (سانتی‌متر)</label>
+          <input type="number" id="fHeight" inputmode="numeric" placeholder="مثلاً ۱۷۵" min="100" max="250" step="0.5">
+        </div>
+        <div class="field">
+          <label>وزن (کیلوگرم)</label>
+          <input type="number" id="fWeight" inputmode="decimal" placeholder="مثلاً ۸۰" min="30" max="300" step="0.1">
+        </div>
+      </div>
+      <div class="bmi-inline" id="fBmi"></div>
+    </div>
+
+    <div class="onb-card">
+      <h3>۱. هدف اصلی شما چیست؟</h3>
+      <div class="options" id="qGoal">
+        <button class="option-btn active" data-value="loss">کاهش وزن<small>چربی‌سوزی و تناسب</small></button>
+        <button class="option-btn" data-value="maintain">تثبیت وزن<small>حفظ وضعیت فعلی</small></button>
+        <button class="option-btn" data-value="gain">افزایش حجم<small>عضله‌سازی</small></button>
+        <button class="option-btn" data-value="health">بهبود سلامت<small>انرژی و نشاط</small></button>
+      </div>
+    </div>
+
+    <div class="onb-card">
+      <h3>۲. وزن مورد نظر شما در پایان ماه؟</h3>
+      <div class="options" id="qTarget">
+        <button class="option-btn" disabled style="grid-column:1/-1; color:var(--muted);">ابتدا وزن خود را وارد کنید</button>
+      </div>
+    </div>
+
+    <div class="onb-card">
+      <h3>۳. سطح فعالیت روزانه شما؟</h3>
+      <div class="options" id="qActivity">
+        <button class="option-btn" data-value="low">کم‌تحرک<small>کمتر از ۳ روز ورزش</small></button>
+        <button class="option-btn active" data-value="mid">متوسط<small>۳ تا ۴ روز ورزش</small></button>
+        <button class="option-btn" data-value="high">فعال<small>۵ تا ۶ روز ورزش</small></button>
+        <button class="option-btn" data-value="veryHigh">خیلی فعال<small>روزانه و شدید</small></button>
+      </div>
+    </div>
+
+    <div class="onb-card">
+      <h3>۴. فستینگ متناوب؟</h3>
+      <div class="options" id="qFasting">
+        <button class="option-btn active" data-value="16:8">۱۶:۸<small>پنجره ۸ ساعته</small></button>
+        <button class="option-btn" data-value="14:10">۱۴:۱۰<small>پنجره ۱۰ ساعته</small></button>
+        <button class="option-btn" data-value="none">خیر<small>بدون فستینگ</small></button>
+        <button class="option-btn" data-value="later">بعداً<small>از تنظیمات اضافه کن</small></button>
+      </div>
+    </div>
+
+    <button class="build-btn" id="buildBtn">ساخت برنامه من</button>
+  </div>
+</section>
+
+<!-- ============ PROGRAM ============ -->
+<div class="shell" id="app-shell" hidden>
+  <header>
+    <div class="hdr-top">
+      <button class="back-btn" id="backBtn">← منو</button>
+      <button class="settings-btn" id="settingsBtn">⚙️</button>
+    </div>
+    <h1>برنامه شخصی ۳۰ روزه</h1>
+    <p class="sub">تمرین در خانه • رژیم غذایی • پیشرفت روزانه</p>
+    <div class="bar"><i id="fill"></i></div>
+    <div class="hud-txt">
+      <span><b id="ptext">۰</b> از <span id="ptotal">۰</span> کار انجام شده</span>
+      <span id="ppct">۰٪</span>
+    </div>
+  </header>
+  <div class="profile-bar" id="profileBar"></div>
+  <div class="tools">
+    <button class="tool" id="toggleAll">باز کردن همه</button>
+    <button class="tool danger" id="reset">ریست</button>
+  </div>
+  <main id="app"></main>
+  <footer>
+    این برنامه جنبه عمومی دارد. در صورت بارداری، بیماری زمینه‌ای یا مصرف دارو،<br>
+    پیش از شروع با پزشک مشورت کنید.
+  </footer>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal hidden" id="settingsModal">
+  <div class="modal-content">
+    <h3>
+      <span>⚙️ تنظیمات</span>
+      <button class="modal-close" id="settingsClose">×</button>
+    </h3>
+    <div class="modal-row">
+      <span>فستینگ متناوب</span>
+      <label class="switch">
+        <input type="checkbox" id="fastToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="modal-row" id="fastTypeRow">
+      <span>نوع فستینگ</span>
+      <select id="fastType">
+        <option value="16:8">۱۶:۸</option>
+        <option value="14:10">۱۴:۱۰</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="danger" id="restartBtn">شروع مجدد</button>
+      <button class="primary" id="applyBtn">اعمال</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   PWA install logic
+   ========================================================= */
+var installBtn = document.getElementById('installBtn');
+var iosHint = document.getElementById('iosHint');
+var isStandalone =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true;
+
+if (!isStandalone) {
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    window.__deferredPrompt = e;
+    installBtn.hidden = false;
+  });
+  installBtn.addEventListener('click', async function(){
+    if (!window.__deferredPrompt) return;
+    window.__deferredPrompt.prompt();
+    try { await window.__deferredPrompt.userChoice; } catch(_){}
+    window.__deferredPrompt = null;
+    installBtn.hidden = true;
+  });
+
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isIOS && isSafari) iosHint.hidden = false;
+
+  window.addEventListener('appinstalled', function(){
+    installBtn.hidden = true;
+    iosHint.hidden = true;
+  });
+}
+
+/* =========================================================
+   helpers
+   ========================================================= */
+const toFa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const escHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const STORAGE_KEY = 'fit30-v2';
+let state = {
+  profile: null,
+  fastingEnabled: false,
+  fastingType: '16:8',
+  checks: {},
+  notes: {}
+};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if (saved) state = { ...state, ...saved };
+} catch(e){}
+
+function saveState(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+let openWeek = 1;
+
+const GOAL_LABELS = { loss:'کاهش وزن', maintain:'تثبیت وزن', gain:'افزایش حجم', health:'بهبود سلامت' };
+const ACTIVITY_LABELS = { low:'کم‌تحرک', mid:'متوسط', high:'فعال', veryHigh:'خیلی فعال' };
+const ACTIVITY_MULT = { low: 0.8, mid: 1.0, high: 1.2, veryHigh: 1.4 };
+
+const MEAL_PLANS = {
+  loss: [
+    ['صبحانه — ۲ تخم‌مرغ آب‌پز + خیار و گوجه + چای سبز','ناهار — سینه مرغ گریل ۱۵۰ گرم + سالاد بزرگ + ۱ ق‌غ روغن زیتون','شام — سوپ سبزیجات + ماست کم‌چرب + نان سنگک کوچک','میان‌وعده — ۱۰ عدد بادام + ۱ سیب'],
+    ['صبحانه — فرنی جو دوسر با شیر + دارچین','ناهار — ماهی گریل + کینوا + سبزیجات بخارپز','شام — سالاد مرغ با لیمو و روغن زیتون','میان‌وعده — ماست یونانی کم‌چرب + خیار'],
+    ['صبحانه — املت ۲ تخم‌مرغ با اسفناج + ۱ برش نان سبوس‌دار','ناهار — خوراک عدسی + سالاد فصل + ماست کم‌چرب','شام — تن ماهی + سالاد + آب لیمو','میان‌وعده — ۱ مشت توت + ۵ بادام']
+  ],
+  maintain: [
+    ['صبحانه — ۲ تخم‌مرغ + نان سبوس‌دار + خیار و گوجه','ناهار — سینه مرغ گریل + نصف پیمانه برنج + سالاد','شام — ماست + ۱ میوه + ۱۰ بادام'],
+    ['صبحانه — جو دوسر + شیر + موز + دارچین','ناهار — ماهی گریل + سیب‌زمینی آب‌پز + سبزیجات','شام — پنیر کم‌نمک + خیار + ۵ گردو + نان سنگک'],
+    ['صبحانه — املت + نان سبوس‌دار + چای سبز','ناهار — خوراک عدسی + سالاد فصل + ماست','شام — شیر + ۲ خرما + چند بادام']
+  ],
+  gain: [
+    ['صبحانه — ۳ تخم‌مرغ + نان سبوس‌دار + پنیر + گردو','ناهار — سینه مرغ ۲۰۰ گرم + برنج + ماست','پس از تمرین — شیک پروتئین + موز','شام — گوشت گریل + کینوا + سبزیجات'],
+    ['صبحانه — جو دوسر + شیر + موز + کره بادام‌زمینی','ناهار — ماهی + برنج + سالاد','پس از تمرین — ۲ تخم‌مرغ + نان','شام — ماست یونانی + میوه + گردو'],
+    ['صبحانه — املت ۳ تخم‌مرغ + پنیر + نان','ناهار — عدس + برنج + مرغ','پس از تمرین — شیر + خرما','شام — تن ماهی + سیب‌زمینی آب‌پز + سالاد']
+  ],
+  health: [
+    ['صبحانه — جو دوسر + میوه + دانه‌ها','ناهار — سالاد بزرگ + مرغ گریل + روغن زیتون','شام — سوپ سبزیجات + نان سبوس‌دار'],
+    ['صبحانه — ماست + گرانولا + توت','ناهار — ماهی + سبزیجات + برنج قهوه‌ای','شام — املت سبزیجات + نان'],
+    ['صبحانه — اسموتی سبز + نان تست','ناهار — عدسی + سالاد فصل','شام — مرغ + سبزیجات کبابی']
+  ]
+};
+
+const F_1410 = '۱۴:۱۰ — پنجره غذا: ۱۰:۰۰ تا ۲۰:۰۰';
+const F_168  = '۱۶:۸ — پنجره غذا: ۱۲:۰۰ تا ۲۰:۰۰';
+
+const basePlan = [
+  { day:1, week:1, title:'شروع آرام', workout:['گرم‌کردن: ۳ دقیقه راه‌رفتن در جا + چرخش دست‌ها','اسکات ۳ × ۱۲','شنا روی زانو ۳ × ۸','پل باسن ۳ × ۱۵','پلانک ۳ × ۲۰ ثانیه','سردکردن و کشش ۵ دقیقه'] },
+  { day:2, week:1, title:'استراحت فعال', workout:['پیاده‌روی ۲۵ تا ۳۰ دقیقه','کشش و تحرک مفاصل ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
+  { day:3, week:1, title:'پایین‌تنه و مرکز بدن', workout:['گرم‌کردن ۳ دقیقه','لانژ عقب ۳ × ۱۰ (هر پا)','دیوارنشسته ۳ × ۳۰ ثانیه','ساق پا ۳ × ۱۵','دد باگ ۳ × ۱۰','کرانچ ۳ × ۱۲','کشش پاها ۵ دقیقه'] },
+  { day:4, week:1, title:'بالاتنه و هوازی', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۰','پارویی با بطری ۳ × ۱۲','پرس سرشانه ۳ × ۱۰','سوپرمن ۳ × ۱۲','جک ۳ × ۳۰ ثانیه','کشش ۵ دقیقه'] },
+  { day:5, week:1, title:'مرکز بدن و کشش', workout:['پلانک ۳ × ۳۰ ثانیه','پلانک پهلو ۲ × ۲۰ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۱۵','بِرد داگ ۳ × ۱۰','کشش ۸ دقیقه'] },
+  { day:6, week:1, title:'تمام بدن', workout:['گرم‌کردن ۳ دقیقه','اسکات ۳ × ۱۵','شنا روی زانو ۳ × ۱۰','پل باسن تک‌پا ۳ × ۱۰ (هر پا)','پلانک ۳ × ۳۰ ثانیه','راه‌پیمایی سریع ۵ دقیقه'] },
+  { day:7, week:1, title:'استراحت و بازبینی', workout:['پیاده‌روی ۳۰ دقیقه','کشش و تحرک مفاصل ۱۰ دقیقه'] },
+  { day:8, week:2, title:'پایین‌تنه و مرکز بدن', workout:['گرم‌کردن ۳ دقیقه','لانژ عقب ۳ × ۱۲ (هر پا)','دیوارنشسته ۳ × ۴۰ ثانیه','ساق پا ۳ × ۲۰','دد باگ ۳ × ۱۲','کرانچ ۳ × ۱۵','کشش ۵ دقیقه'] },
+  { day:9, week:2, title:'بالاتنه و هوازی', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۲','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۲','سوپرمن ۳ × ۱۵','جک ۳ × ۴۰ ثانیه','کشش ۵ دقیقه'] },
+  { day:10, week:2, title:'HIIT مقدماتی', workout:['۶ راند: ۲۰ ثانیه تلاش + ۴۰ ثانیه استراحت','حرکات: اسکات، کوهنورد، زانو بلند، برپی ساده','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
+  { day:11, week:2, title:'استراحت فعال', workout:['پیاده‌روی ۳۰ دقیقه','کشش ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
+  { day:12, week:2, title:'مرکز بدن', workout:['پلانک ۳ × ۴۰ ثانیه','پلانک پهلو ۲ × ۲۵ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۱۸','بِرد داگ ۳ × ۱۲','کشش ۸ دقیقه'] },
+  { day:13, week:2, title:'تمام بدن', workout:['گرم‌کردن ۳ دقیقه','اسکات ۳ × ۲۰','شنا روی زانو ۳ × ۱۲','پل باسن ۳ × ۲۰','پلانک ۳ × ۴۰ ثانیه','کوهنورد ۳ × ۲۰ ثانیه'] },
+  { day:14, week:2, title:'مدار تمام بدن', workout:['۳ دور: ۱۰ اسکات، ۸ شنا، ۱۲ پل باسن، ۲۰ ثانیه پلانک، ۱۵ جک','۳۰ ثانیه استراحت بین حرکات'] },
+  { day:15, week:3, title:'بالاتنه', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۵','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۲','دیپ صندلی ۳ × ۱۰','پلانک ۳ × ۴۵ ثانیه'] },
+  { day:16, week:3, title:'HIIT', workout:['۸ راند: ۳۰ ثانیه تلاش + ۳۰ ثانیه استراحت','حرکات: اسکات پرشی، کوهنورد، برپی، زانو بلند','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
+  { day:17, week:3, title:'استراحت فعال', workout:['پیاده‌روی ۳۰ تا ۴۰ دقیقه','کشش ۱۰ دقیقه'] },
+  { day:18, week:3, title:'پایین‌تنه', workout:['گرم‌کردن ۳ دقیقه','اسکات ۴ × ۱۵','لانژ ۳ × ۱۲ (هر پا)','پل باسن تک‌پا ۳ × ۱۲','دیوارنشسته ۳ × ۴۵ ثانیه','ساق پا ۳ × ۲۰'] },
+  { day:19, week:3, title:'مرکز بدن و کشش', workout:['پلانک ۳ × ۴۵ ثانیه','پلانک پهلو ۳ × ۲۵ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۲۰','بِرد داگ ۳ × ۱۲','کشش ۱۰ دقیقه'] },
+  { day:20, week:3, title:'تمام بدن', workout:['۴ دور: ۱۲ اسکات، ۱۰ شنا، ۱۵ پل باسن، ۳۰ ثانیه پلانک، ۲۰ جک','۵ دقیقه گرم‌کردن + ۵ دقیقه کشش'] },
+  { day:21, week:3, title:'مدار و هوازی', workout:['۴ دور مدار روز ۱۴','۵ دقیقه راه‌پیمایی سریع','کشش ۵ دقیقه'] },
+  { day:22, week:4, title:'تمام بدن', workout:['گرم‌کردن ۵ دقیقه','اسکات ۴ × ۱۵','شنا ۳ × ۱۲','پل باسن ۳ × ۲۰','پلانک ۳ × ۶۰ ثانیه','کوهنورد ۳ × ۳۰ ثانیه'] },
+  { day:23, week:4, title:'HIIT', workout:['۸ راند: ۳۰ ثانیه تلاش + ۳۰ ثانیه استراحت','حرکات: برپی، اسکات پرشی، کوهنورد، زانو بلند','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
+  { day:24, week:4, title:'استراحت', workout:['پیاده‌روی آرام ۳۰ دقیقه','کشش ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
+  { day:25, week:4, title:'پایین‌تنه', workout:['گرم‌کردن ۳ دقیقه','اسکات پرشی ۳ × ۱۰','لانژ ۳ × ۱۵ (هر پا)','پل باسن ۳ × ۲۵','دیوارنشسته ۳ × ۶۰ ثانیه','ساق پا ۳ × ۲۵'] },
+  { day:26, week:4, title:'بالاتنه', workout:['گرم‌کردن ۳ دقیقه','شنا ۳ × ۱۰','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۵','دیپ صندلی ۳ × ۱۲','پلانک ۳ × ۶۰ ثانیه'] },
+  { day:27, week:4, title:'مرکز بدن', workout:['پلانک ۳ × ۶۰ ثانیه','پلانک پهلو ۳ × ۳۰ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۲۰','بِرد داگ ۳ × ۱۵','کشش ۱۰ دقیقه'] },
+  { day:28, week:4, title:'مدار نهایی', workout:['۴ دور: ۱۲ اسکات، ۱۰ شنا، ۱۵ پل باسن، ۳۰ ثانیه پلانک، ۲۰ جک','کشش ۵ دقیقه'] },
+  { day:29, week:4, title:'ارزیابی', workout:['اندازه‌گیری وزن و دور کمر','گرفتن عکس پیشرفت','پیاده‌روی ۳۰ دقیقه'] },
+  { day:30, week:4, title:'جشن و برنامه بعدی', workout:['تمرین سبک تمام بدن ۱۵ دقیقه','کشش ۱۰ دقیقه'] }
+];
+
+const GOAL_TIPS = {
+  loss: 'امروز کالری دریافتی را کنترل کن؛ پروتئین بالا سیر نگهت می‌دارد.',
+  maintain: 'تعادل بین تمرین و تغذیه؛ روی کیفیت غذا تمرکز کن.',
+  gain: 'پروتئین کافی بخور (حداقل ۱.۶ گرم به ازای هر کیلو وزن).',
+  health: 'سبزیجات و میوه بیشتر، غذاهای فرآوری‌شده کمتر.'
+};
+
+const splash = document.getElementById('splash');
+const onboarding = document.getElementById('onboarding');
+const shell = document.getElementById('app-shell');
+const settingsModal = document.getElementById('settingsModal');
+const app = document.getElementById('app');
+
+let formState = { goal:'loss', targetWeight:null, activity:'mid', fasting:'16:8' };
+const fHeight = document.getElementById('fHeight');
+const fWeight = document.getElementById('fWeight');
+const fBmi = document.getElementById('fBmi');
+
+function computeBmi(w, h){
+  if (!w || !h) return null;
+  const m = h / 100;
+  return w / (m * m);
+}
+
+function renderFbBmi(){
+  const w = parseFloat(fWeight.value);
+  const h = parseFloat(fHeight.value);
+  const bmi = computeBmi(w, h);
+  if (bmi === null || !isFinite(bmi) || bmi <= 0){ fBmi.classList.remove('show'); return; }
+  let txt = 'وزن نرمال', color = '#12b886';
+  if (bmi < 18.5){ txt = 'کمبود وزن'; color = '#f59f00'; }
+  else if (bmi < 25){ txt = 'وزن نرمال'; color = '#12b886'; }
+  else if (bmi < 30){ txt = 'اضافه وزن'; color = '#f59f00'; }
+  else { txt = 'چاقی'; color = '#e03131'; }
+  fBmi.classList.add('show');
+  fBmi.innerHTML = `شاخص BMI فعلی: <b style="color:${color}">${bmi.toFixed(1)}</b> — ${txt}`;
+}
+
+function rebuildTargetOptions(){
+  const w = parseFloat(fWeight.value);
+  const container = document.getElementById('qTarget');
+  if (!w || !isFinite(w) || w <= 0){
+    formState.targetWeight = null;
+    container.innerHTML = `<button class="option-btn" disabled style="grid-column:1/-1; color:var(--muted);">ابتدا وزن خود را وارد کنید</button>`;
+    return;
+  }
+  formState.targetWeight = null;
+  const deltas = { loss:[-3,-6,-10,0], maintain:[-2,0,2,4], gain:[0,2,4,6], health:[-3,0,2,-5] }[formState.goal];
+  container.innerHTML = deltas.map(d => {
+    const target = Math.round(w + d);
+    let desc = d === 0 ? 'تثبیت وزن' : (d > 0 ? `${d} کیلو افزایش` : `${Math.abs(d)} کیلو کاهش`);
+    return `<button class="option-btn" data-value="${target}"><b>${toFa(target)} کیلو</b><small>${desc}</small></button>`;
+  }).join('');
+}
+
+function attachOptionGroup(id, key){
+  const container = document.getElementById(id);
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('.option-btn');
+    if (!btn || btn.disabled) return;
+    container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (key === 'targetWeight') formState.targetWeight = +btn.dataset.value;
+    else formState[key] = btn.dataset.value;
+    if (key === 'goal') rebuildTargetOptions();
+  });
+}
+attachOptionGroup('qGoal', 'goal');
+attachOptionGroup('qTarget', 'targetWeight');
+attachOptionGroup('qActivity', 'activity');
+attachOptionGroup('qFasting', 'fasting');
+
+fHeight.addEventListener('input', renderFbBmi);
+fWeight.addEventListener('input', () => { renderFbBmi(); rebuildTargetOptions(); });
+
+function adjustWorkout(text, activity){
+  const mult = ACTIVITY_MULT[activity] || 1;
+  if (mult === 1) return text;
+  return text.replace(/× (\d+)/g, (m, n) => '× ' + Math.round(+n * mult));
+}
+
+function getFastingText(){
+  if (!state.fastingEnabled) return null;
+  return state.fastingType === '16:8' ? F_168 : F_1410;
+}
+
+function dayHTML(d, profile){
+  const id = d.day;
+  const meals = MEAL_PLANS[profile.goal][(id - 1) % MEAL_PLANS[profile.goal].length];
+
+  const wItems = d.workout.map((t, i) => {
+    const key = `d${id}w${i}`;
+    const txt = adjustWorkout(t, profile.activity);
+    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${txt}</span></label>`;
+  }).join('');
+
+  const mItems = meals.map((t, i) => {
+    const key = `d${id}m${i}`;
+    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${t}</span></label>`;
+  }).join('');
+
+  const fastingTxt = getFastingText();
+  const fastingBlock = fastingTxt ? `
+    <div class="block">
+      <h3>⏱ فستینگ</h3>
+      <label class="check"><input type="checkbox" data-key="d${id}f"${state.checks[`d${id}f`]?' checked':''}><span>${fastingTxt}</span></label>
+    </div>` : '';
+
+  const noteKey = `note_d${id}`;
+  const noteVal = state.notes[noteKey] || '';
+
+  return `
+  <details class="day" data-daynum="${id}"${id === 1 ? ' open' : ''}>
+    <summary>
+      <span class="dn">${toFa(id)}</span>
+      <span class="dt">
+        <span class="dtitle">${d.title}</span>
+        <span class="dmeta">روز ${toFa(id)}${fastingTxt ? ' • فستینگ ' + state.fastingType : ''}</span>
+      </span>
+      <span class="dprog">۰/۰</span>
+    </summary>
+    <div class="dbody">
+      ${fastingBlock}
+      <div class="block">
+        <h3>🏋️ تمرین در خانه</h3>
+        ${wItems}
+      </div>
+      <div class="block">
+        <h3>🍽 رژیم ${GOAL_LABELS[profile.goal]}</h3>
+        ${mItems}
+      </div>
+      <p class="tip">💡 ${GOAL_TIPS[profile.goal]}</p>
+      <div class="block">
+        <h3>📝 یادداشت این روز</h3>
+        <textarea class="note" data-key="${noteKey}" rows="3"
+          placeholder="یادداشت خود را برای این روز بنویسید…">${escHtml(noteVal)}</textarea>
+      </div>
+    </div>
+  </details>`;
+}
+
+function generateProgramHTML(profile){
+  const weekSubs = { 1:'هفته سازگاری', 2:'هفته پیشرفت', 3:'هفته افزایش شدت', 4:'هفته تثبیت' };
+  return [1,2,3,4].map(w => {
+    const days = basePlan.filter(d => d.week === w);
+    const chips = days.map(d => `<button class="dchip" data-dayfilter="${d.day}">روز ${toFa(d.day)}</button>`).join('');
+    const isOpen = openWeek === w;
+    return `
+    <section class="week${isOpen ? ' open' : ''}" data-week="${w}">
+      <div class="week-head">
+        <span class="week-title">
+          <span class="wt">هفته ${toFa(w)}</span>
+          <span class="wsub">${weekSubs[w]} • روزهای ${toFa(days[0].day)} تا ${toFa(days[days.length-1].day)}</span>
+        </span>
+        <span class="week-right">
+          <span class="week-progress">۰/۰</span>
+          <span class="chev">▾</span>
+        </span>
+      </div>
+      <div class="week-body">
+        <nav class="daybar">
+          <button class="dchip active" data-dayfilter="all">همه</button>
+          ${chips}
+        </nav>
+        <div class="week-days">
+          ${days.map(d => dayHTML(d, profile)).join('')}
+        </div>
+      </div>
+    </section>`;
+  }).join('');
+}
+
+function renderProgram(){
+  if (!state.profile) return;
+  const openStates = {};
+  document.querySelectorAll('.day').forEach(d => { openStates[d.dataset.daynum] = d.open; });
+  app.innerHTML = generateProgramHTML(state.profile);
+  document.querySelectorAll('.day').forEach(d => {
+    if (openStates[d.dataset.daynum] !== undefined) d.open = openStates[d.dataset.daynum];
+  });
+  document.querySelectorAll('input[type="checkbox"][data-key]').forEach(cb => {
+    cb.checked = !!state.checks[cb.dataset.key];
+  });
+  document.querySelectorAll('textarea.note').forEach(t => {
+    t.value = state.notes[t.dataset.key] || '';
+  });
+  const p = state.profile;
+  document.getElementById('profileBar').innerHTML = `
+    <div class="pb-item"><span>هدف</span><b>${GOAL_LABELS[p.goal]}</b></div>
+    <div class="pb-item"><span>وزن فعلی</span><b>${toFa(p.weight)} کیلو</b></div>
+    <div class="pb-item"><span>وزن هدف</span><b>${toFa(p.targetWeight)} کیلو</b></div>
+    <div class="pb-item"><span>فعالیت</span><b>${ACTIVITY_LABELS[p.activity]}</b></div>
+    ${state.fastingEnabled ? `<div class="pb-item"><span>فستینگ</span><b>${state.fastingType}</b></div>` : ''}
+  `;
+  updateAll();
+}
+
+const fill = document.getElementById('fill');
+const ptext = document.getElementById('ptext');
+const ptotal = document.getElementById('ptotal');
+const ppct = document.getElementById('ppct');
+
+function updateAll(){
+  let total = 0, done = 0;
+  document.querySelectorAll('.week').forEach(week => {
+    const boxes = week.querySelectorAll('input[type="checkbox"]');
+    const checked = week.querySelectorAll('input[type="checkbox"]:checked').length;
+    total += boxes.length;
+    done += checked;
+    week.querySelector('.week-progress').textContent = `${toFa(checked)}/${toFa(boxes.length)}`;
+    week.classList.toggle('complete', boxes.length > 0 && checked === boxes.length);
+  });
+  document.querySelectorAll('.day').forEach(day => {
+    const boxes = day.querySelectorAll('input[type="checkbox"]');
+    const checked = day.querySelectorAll('input[type="checkbox"]:checked').length;
+    const badge = day.querySelector('.dprog');
+    badge.textContent = `${toFa(checked)}/${toFa(boxes.length)}`;
+    const complete = boxes.length > 0 && checked === boxes.length;
+    badge.classList.toggle('done', complete);
+    day.classList.toggle('complete', complete);
+  });
+  const pct = total ? Math.round(done / total * 100) : 0;
+  fill.style.width = pct + '%';
+  ptext.textContent = toFa(done);
+  ptotal.textContent = toFa(total);
+  ppct.textContent = toFa(pct) + '٪';
+}
+
+app.addEventListener('change', e => {
+  const cb = e.target;
+  if (cb.type !== 'checkbox' || !cb.dataset.key) return;
+  state.checks[cb.dataset.key] = cb.checked;
+  saveState();
+  updateAll();
+});
+app.addEventListener('input', e => {
+  const t = e.target;
+  if (!t.classList.contains('note')) return;
+  state.notes[t.dataset.key] = t.value;
+  saveState();
+});
+app.addEventListener('click', e => {
+  const head = e.target.closest('.week-head');
+  if (head){
+    const week = head.closest('.week');
+    if (!week) return;
+    const w = +week.dataset.week;
+    const wasOpen = week.classList.contains('open');
+    document.querySelectorAll('.week').forEach(el => el.classList.remove('open'));
+    if (wasOpen){ openWeek = null; }
+    else { week.classList.add('open'); openWeek = w; }
+    return;
+  }
+  const chip = e.target.closest('.dchip');
+  if (chip){
+    const week = chip.closest('.week');
+    if (!week) return;
+    const filter = chip.dataset.dayfilter;
+    week.querySelectorAll('.dchip').forEach(c => c.classList.toggle('active', c === chip));
+    week.querySelectorAll('.week-days .day').forEach(day => {
+      const show = filter === 'all' || day.dataset.daynum === filter;
+      day.classList.toggle('hide', !show);
+      if (show && filter !== 'all') day.open = true;
+    });
+  }
+});
+
+function showSplash(){
+  splash.style.display = 'flex';
+  onboarding.hidden = true;
+  shell.hidden = true;
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+function showOnboarding(){
+  if (state.profile){
+    const p = state.profile;
+    fHeight.value = p.height; fWeight.value = p.weight;
+    formState.goal = p.goal; formState.activity = p.activity; formState.fasting = p.fasting;
+    document.querySelectorAll('#qGoal .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.goal));
+    document.querySelectorAll('#qActivity .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.activity));
+    document.querySelectorAll('#qFasting .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.fasting));
+    renderFbBmi(); rebuildTargetOptions();
+    document.querySelectorAll('#qTarget .option-btn').forEach(b => {
+      b.classList.toggle('active', +b.dataset.value === p.targetWeight);
+    });
+    formState.targetWeight = p.targetWeight;
+  } else {
+    fHeight.value = ''; fWeight.value = '';
+    renderFbBmi(); rebuildTargetOptions();
+  }
+  splash.style.display = 'none';
+  onboarding.hidden = false;
+  shell.hidden = true;
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+function showProgram(){
+  splash.style.display = 'none';
+  onboarding.hidden = true;
+  shell.hidden = false;
+  if (openWeek === null || openWeek === undefined) openWeek = 1;
+  renderProgram();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (state.profile) showProgram(); else showOnboarding();
+});
+document.getElementById('onbBack').addEventListener('click', showSplash);
+document.getElementById('backBtn').addEventListener('click', showSplash);
+
+document.getElementById('buildBtn').addEventListener('click', () => {
+  const h = parseFloat(fHeight.value);
+  const w = parseFloat(fWeight.value);
+  if (!h || h < 100 || h > 250){ alert('لطفاً قد معتبر وارد کنید (۱۰۰ تا ۲۵۰ سانتی‌متر).'); fHeight.focus(); return; }
+  if (!w || w < 30 || w > 300){ alert('لطفاً وزن معتبر وارد کنید (۳۰ تا ۳۰۰ کیلوگرم).'); fWeight.focus(); return; }
+  if (!formState.targetWeight){ alert('لطفاً وزن هدف را انتخاب کنید.'); return; }
+  state.profile = {
+    height: h, weight: w,
+    goal: formState.goal,
+    targetWeight: formState.targetWeight,
+    activity: formState.activity,
+    fasting: formState.fasting,
+    createdAt: Date.now()
+  };
+  state.fastingEnabled = formState.fasting === '16:8' || formState.fasting === '14:10';
+  state.fastingType = state.fastingEnabled ? formState.fasting : '16:8';
+  openWeek = 1;
+  saveState();
+  showProgram();
+});
+
+const fastToggle = document.getElementById('fastToggle');
+const fastType = document.getElementById('fastType');
+const fastTypeRow = document.getElementById('fastTypeRow');
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  fastToggle.checked = state.fastingEnabled;
+  fastType.value = state.fastingType;
+  fastTypeRow.style.display = state.fastingEnabled ? 'flex' : 'none';
+  settingsModal.classList.remove('hidden');
+});
+document.getElementById('settingsClose').addEventListener('click', () => settingsModal.classList.add('hidden'));
+settingsModal.addEventListener('click', e => {
+  if (e.target === settingsModal) settingsModal.classList.add('hidden');
+});
+fastToggle.addEventListener('change', () => {
+  fastTypeRow.style.display = fastToggle.checked ? 'flex' : 'none';
+});
+document.getElementById('applyBtn').addEventListener('click', () => {
+  state.fastingEnabled = fastToggle.checked;
+  state.fastingType = fastType.value;
+  saveState();
+  settingsModal.classList.add('hidden');
+  renderProgram();
+});
+document.getElementById('restartBtn').addEventListener('click', () => {
+  if (!confirm('همه اطلاعات و پیشرفت پاک شود و از ابتدا شروع کنید؟')) return;
+  state = { profile: null, fastingEnabled: false, fastingType: '16:8', checks: {}, notes: {} };
+  saveState();
+  settingsModal.classList.add('hidden');
+  openWeek = 1;
+  showOnboarding();
+});
+
+const toggleBtn = document.getElementById('toggleAll');
+toggleBtn.addEventListener('click', () => {
+  const visibleWeek = document.querySelector('.week.open');
+  if (!visibleWeek) return;
+  const days = [...visibleWeek.querySelectorAll('.day')].filter(d => !d.classList.contains('hide'));
+  const allOpen = days.every(d => d.open);
+  days.forEach(d => d.open = !allOpen);
+  toggleBtn.textContent = allOpen ? 'باز کردن همه' : 'بستن همه';
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('همه تیک‌ها و یادداشت‌ها پاک شوند؟ (اطلاعات شخصی حفظ می‌شود)')) return;
+  state.checks = {};
+  state.notes = {};
+  saveState();
+  document.querySelectorAll('input[type="checkbox"][data-key]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('textarea.note').forEach(t => t.value = '');
+  updateAll();
+});
+
+rebuildTargetOptions();
+</script>
+</body>
+</html>
