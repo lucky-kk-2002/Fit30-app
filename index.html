@@ -11,7 +11,6 @@
 <meta name="apple-mobile-web-app-title" content="۳۰ روزه">
 <title>برنامه شخصی ۳۰ روزه</title>
 
-<!-- لینک به فایل منیفست و آیکون پنگ -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -20,7 +19,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ... بقیه کدهای CSS اینجا قرار می‌گیرند (نیازی به تغییرشون نیست) ... */
   :root{
     --bg:#eef2f9; --card:#fff; --ink:#15202e; --muted:#6b7a90;
     --line:#e5ebf4; --accent:#2f7cf6; --accent-2:#12b886;
@@ -463,9 +461,6 @@
   <h1 class="slogan">خواستن ، توانستن است💪</h1>
   <button class="start-btn" id="startBtn">شروع</button>
   <button class="install-btn" id="installBtn" hidden>📲 نصب روی دستگاه</button>
-  <div class="ios-hint" id="iosHint" hidden>
-    برای نصب: دکمه <b>اشتراک‌گذاری ⬆️</b> پایین مرورگر را بزنید و گزینه <b>«Add to Home Screen»</b> یا <b>«افزودن به صفحه اصلی»</b> را انتخاب کنید.
-  </div>
 </section>
 
 <!-- ============ ONBOARDING ============ -->
@@ -591,44 +586,46 @@
    PWA install logic & Hide button
    ========================================================= */
 var installBtn = document.getElementById('installBtn');
-var iosHint = document.getElementById('iosHint');
-
-// بررسی اینکه آیا اپ در حالت مستقل (نصب شده) اجرا می‌شود یا خیر
 var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 var wasInstalled = localStorage.getItem('fit30-installed') === 'true';
 
 if (isStandalone || wasInstalled) {
-  installBtn.style.display = 'none'; // مخفی کردن کامل دکمه
-  iosHint.style.display = 'none';
+  if(installBtn) installBtn.style.display = 'none';
 } else {
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     window.__deferredPrompt = e;
-    installBtn.hidden = false;
+    if(installBtn) installBtn.hidden = false;
   });
   
-  installBtn.addEventListener('click', async function(){
-    if (!window.__deferredPrompt) return;
-    window.__deferredPrompt.prompt();
-    try { 
-      var choice = await window.__deferredPrompt.userChoice;
-      if (choice.outcome === 'accepted') {
-        localStorage.setItem('fit30-installed', 'true');
-        installBtn.style.display = 'none';
-      }
-    } catch(_){}
-    window.__deferredPrompt = null;
-    installBtn.hidden = true;
-  });
-
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  if (isIOS && isSafari) iosHint.hidden = false;
+  if(installBtn) {
+    installBtn.addEventListener('click', async function(){
+      if (!window.__deferredPrompt) return;
+      window.__deferredPrompt.prompt();
+      try { 
+        var choice = await window.__deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          localStorage.setItem('fit30-installed', 'true');
+          installBtn.style.display = 'none';
+        }
+      } catch(_){}
+      window.__deferredPrompt = null;
+      installBtn.hidden = true;
+    });
+  }
 
   window.addEventListener('appinstalled', function(){
     localStorage.setItem('fit30-installed', 'true');
-    installBtn.style.display = 'none';
-    iosHint.style.display = 'none';
+    if(installBtn) installBtn.style.display = 'none';
+  });
+}
+
+/* =========================================================
+   Service Worker
+   ========================================================= */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error', err));
   });
 }
 
@@ -639,7 +636,7 @@ const toFa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 const escHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const STORAGE_KEY = 'fit30-v2';
+const STORAGE_KEY = 'fit30-v3';
 let state = {
   profile: null,
   fastingEnabled: false,
@@ -660,9 +657,9 @@ let openWeek = 1;
 
 const GOAL_LABELS = { loss:'کاهش وزن', maintain:'تثبیت وزن', gain:'افزایش حجم', health:'بهبود سلامت' };
 const ACTIVITY_LABELS = { low:'کم‌تحرک', mid:'متوسط', high:'فعال', veryHigh:'خیلی فعال' };
-const ACTIVITY_MULT = { low: 0.8, mid: 1.0, high: 1.2, veryHigh: 1.4 };
+const ACTIVITY_MULT = { low: 1.2, mid: 1.375, high: 1.55, veryHigh: 1.725 }; // ضریب فعالیت برای TDEE
 
-const MEAL_PLANS = {
+const MEAL_TEMPLATES = {
   loss: [
     ['صبحانه — ۲ تخم‌مرغ آب‌پز + خیار و گوجه + چای سبز','ناهار — سینه مرغ گریل ۱۵۰ گرم + سالاد بزرگ + ۱ ق‌غ روغن زیتون','شام — سوپ سبزیجات + ماست کم‌چرب + نان سنگک کوچک','میان‌وعده — ۱۰ عدد بادام + ۱ سیب'],
     ['صبحانه — فرنی جو دوسر با شیر + دارچین','ناهار — ماهی گریل + کینوا + سبزیجات بخارپز','شام — سالاد مرغ با لیمو و روغن زیتون','میان‌وعده — ماست یونانی کم‌چرب + خیار'],
@@ -722,10 +719,10 @@ const basePlan = [
 ];
 
 const GOAL_TIPS = {
-  loss: 'امروز کالری دریافتی را کنترل کن؛ پروتئین بالا سیر نگهت می‌دارد.',
-  maintain: 'تعادل بین تمرین و تغذیه؛ روی کیفیت غذا تمرکز کن.',
-  gain: 'پروتئین کافی بخور (حداقل ۱.۶ گرم به ازای هر کیلو وزن).',
-  health: 'سبزیجات و میوه بیشتر، غذاهای فرآوری‌شده کمتر.'
+  loss: 'با توجه به محاسبات، کالری دریافتی شما کنترل شده است. پروتئین بالا سیر نگهتان می‌دارد.',
+  maintain: 'تعادل بین تمرین و تغذیه؛ روی کیفیت غذا تمرکز کنید. کالری شما برای حفظ وزن تنظیم شده است.',
+  gain: 'پروتئین کافی بخورید. کالری وعده‌ها برای افزایش حجم و عضله‌سازی تنظیم شده است.',
+  health: 'سبزیجات و میوه بیشتر، غذاهای فرآوری‌شده کمتر. برنامه برای انرژی پایدار تنظیم شده است.'
 };
 
 const splash = document.getElementById('splash');
@@ -796,10 +793,78 @@ attachOptionGroup('qFasting', 'fasting');
 fHeight.addEventListener('input', renderFbBmi);
 fWeight.addEventListener('input', () => { renderFbBmi(); rebuildTargetOptions(); });
 
-function adjustWorkout(text, activity){
-  const mult = ACTIVITY_MULT[activity] || 1;
-  if (mult === 1) return text;
-  return text.replace(/× (\d+)/g, (m, n) => '× ' + Math.round(+n * mult));
+/* =========================================================
+   ALGORITHM: Personalization (Workout & Diet)
+   ========================================================= */
+// 1. شخصی‌سازی تمرینات بر اساس BMI
+function getPersonalizedWorkout(d, profile) {
+  const bmi = computeBmi(profile.weight, profile.height);
+  const mult = ACTIVITY_MULT[profile.activity] || 1;
+  
+  return d.workout.map(text => {
+    let modifiedText = text;
+    
+    // اگر BMI بالای 30 بود، حرکات پرشی و آسیب‌زا با حرکات ایمن جایگزین شوند
+    if (bmi >= 30) {
+      modifiedText = modifiedText
+        .replace(/جک/g, 'قدم زدن سریع در جا')
+        .replace(/برپی/g, 'اسکات آرام + لمس زانو')
+        .replace(/اسکات پرشی/g, 'اسکات عادی')
+        .replace(/کوهنورد/g, 'پلانک ساده');
+    }
+    
+    // تنظیم تعداد تکرارها بر اساس سطح فعالیت (فقط اعداد تکرار)
+    if (mult !== 1) {
+       modifiedText = modifiedText.replace(/× (\d+)/g, (m, n) => '× ' + Math.round(+n * mult));
+    }
+    
+    return modifiedText;
+  });
+}
+
+// 2. شخصی‌سازی رژیم بر اساس کالری هدف
+function getPersonalizedMeals(profile) {
+  // محاسبه BMR (فرمول Mifflin-St Jeor با فرض سن ۳۰ سال)
+  // BMR = 10W + 6.25H - 5A + 5
+  const weight = profile.weight;
+  const height = profile.height;
+  const age = 30; // سن پیش‌فرض
+  const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+  
+  // محاسبه TDEE
+  const tdee = bmr * (ACTIVITY_MULT[profile.activity] || 1.375);
+  
+  let calorieTarget = tdee;
+  if (profile.goal === 'loss') calorieTarget -= 500;
+  if (profile.goal === 'gain') calorieTarget += 300;
+  
+  // گرد کردن به نزدیک‌ترین ۱۰
+  calorieTarget = Math.round(calorieTarget / 10) * 10;
+  profile.calorieTarget = calorieTarget; // ذخیره برای نمایش در هدر
+
+  // انتخاب تمپلیت پایه
+  let baseMeals = MEAL_TEMPLATES[profile.goal][(profile.dayNum - 1) % MEAL_TEMPLATES[profile.goal].length];
+  
+  // تنظیم وعده‌ها بر اساس کالری هدف
+  return baseMeals.map(meal => {
+    let m = meal;
+    
+    // اگر کالری هدف بالای 2600 بود (نیاز به حجم بیشتر)
+    if (calorieTarget > 2600) {
+      m = m.replace('۱۵۰ گرم', '۲۰۰ گرم').replace('نصف پیمانه', 'یک پیمانه').replace('۲ تخم‌مرغ', '۳ تخم‌مرغ');
+      // اضافه کردن میان وعده اگر نبود
+      if (!m.includes('میان‌وعده') && !m.includes('پس از تمرین')) {
+         m += ' + ۱ عدد میوه';
+      }
+    } 
+    // اگر کالری هدف زیر 1800 بود (نیاز به کاهش حجم)
+    else if (calorieTarget < 1800) {
+      m = m.replace('۲۰۰ گرم', '۱۵۰ گرم').replace('یک پیمانه', 'نصف پیمانه').replace('۳ تخم‌مرغ', '۲ تخم‌مرغ');
+      m = m.replace(' + ۱۰ بادام', '').replace(' + ۵ گردو', '').replace(' + نان سنگک', '');
+    }
+    
+    return m;
+  });
 }
 
 function getFastingText(){
@@ -809,15 +874,18 @@ function getFastingText(){
 
 function dayHTML(d, profile){
   const id = d.day;
-  const meals = MEAL_PLANS[profile.goal][(id - 1) % MEAL_PLANS[profile.goal].length];
-
-  const wItems = d.workout.map((t, i) => {
+  
+  // تولید تمرین شخصی
+  const personalizedWorkout = getPersonalizedWorkout(d, profile);
+  const wItems = personalizedWorkout.map((t, i) => {
     const key = `d${id}w${i}`;
-    const txt = adjustWorkout(t, profile.activity);
-    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${txt}</span></label>`;
+    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${t}</span></label>`;
   }).join('');
 
-  const mItems = meals.map((t, i) => {
+  // تولید غذاهای شخصی
+  profile.dayNum = id;
+  const personalizedMeals = getPersonalizedMeals(profile);
+  const mItems = personalizedMeals.map((t, i) => {
     const key = `d${id}m${i}`;
     return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${t}</span></label>`;
   }).join('');
@@ -845,11 +913,11 @@ function dayHTML(d, profile){
     <div class="dbody">
       ${fastingBlock}
       <div class="block">
-        <h3>🏋️ تمرین در خانه</h3>
+        <h3>🏋️ تمرین شخصی‌سازی‌شده</h3>
         ${wItems}
       </div>
       <div class="block">
-        <h3>🍽 رژیم ${GOAL_LABELS[profile.goal]}</h3>
+        <h3>🍽 رژیم (${toFa(profile.calorieTarget)} کالری)</h3>
         ${mItems}
       </div>
       <p class="tip">💡 ${GOAL_TIPS[profile.goal]}</p>
@@ -864,6 +932,11 @@ function dayHTML(d, profile){
 
 function generateProgramHTML(profile){
   const weekSubs = { 1:'هفته سازگاری', 2:'هفته پیشرفت', 3:'هفته افزایش شدت', 4:'هفته تثبیت' };
+  
+  // محاسبه کالری برای هدر (فقط یکبار)
+  profile.dayNum = 1;
+  getPersonalizedMeals(profile); 
+  
   return [1,2,3,4].map(w => {
     const days = basePlan.filter(d => d.week === w);
     const chips = days.map(d => `<button class="dchip" data-dayfilter="${d.day}">روز ${toFa(d.day)}</button>`).join('');
@@ -897,7 +970,9 @@ function renderProgram(){
   if (!state.profile) return;
   const openStates = {};
   document.querySelectorAll('.day').forEach(d => { openStates[d.dataset.daynum] = d.open; });
+  
   app.innerHTML = generateProgramHTML(state.profile);
+  
   document.querySelectorAll('.day').forEach(d => {
     if (openStates[d.dataset.daynum] !== undefined) d.open = openStates[d.dataset.daynum];
   });
@@ -907,13 +982,16 @@ function renderProgram(){
   document.querySelectorAll('textarea.note').forEach(t => {
     t.value = state.notes[t.dataset.key] || '';
   });
+
   const p = state.profile;
+  const bmi = computeBmi(p.weight, p.height);
+  
   document.getElementById('profileBar').innerHTML = `
     <div class="pb-item"><span>هدف</span><b>${GOAL_LABELS[p.goal]}</b></div>
     <div class="pb-item"><span>وزن فعلی</span><b>${toFa(p.weight)} کیلو</b></div>
     <div class="pb-item"><span>وزن هدف</span><b>${toFa(p.targetWeight)} کیلو</b></div>
-    <div class="pb-item"><span>فعالیت</span><b>${ACTIVITY_LABELS[p.activity]}</b></div>
-    ${state.fastingEnabled ? `<div class="pb-item"><span>فستینگ</span><b>${state.fastingType}</b></div>` : ''}
+    <div class="pb-item"><span>BMI</span><b>${toFa(bmi.toFixed(1))}</b></div>
+    <div class="pb-item" style="background:#eefaf6; border-color:#b8f0db;"><span>کالری روزانه</span><b style="color:#0b8f6a">${toFa(p.calorieTarget)}</b></div>
   `;
   updateAll();
 }
@@ -1037,6 +1115,7 @@ document.getElementById('buildBtn').addEventListener('click', () => {
   if (!h || h < 100 || h > 250){ alert('لطفاً قد معتبر وارد کنید (۱۰۰ تا ۲۵۰ سانتی‌متر).'); fHeight.focus(); return; }
   if (!w || w < 30 || w > 300){ alert('لطفاً وزن معتبر وارد کنید (۳۰ تا ۳۰۰ کیلوگرم).'); fWeight.focus(); return; }
   if (!formState.targetWeight){ alert('لطفاً وزن هدف را انتخاب کنید.'); return; }
+  
   state.profile = {
     height: h, weight: w,
     goal: formState.goal,
@@ -1045,8 +1124,10 @@ document.getElementById('buildBtn').addEventListener('click', () => {
     fasting: formState.fasting,
     createdAt: Date.now()
   };
+  
   state.fastingEnabled = formState.fasting === '16:8' || formState.fasting === '14:10';
   state.fastingType = state.fastingEnabled ? formState.fasting : '16:8';
+  
   openWeek = 1;
   saveState();
   showProgram();
@@ -1106,14 +1187,6 @@ document.getElementById('reset').addEventListener('click', () => {
 });
 
 rebuildTargetOptions();
-  // ثبت Service Worker برای نصب به عنوان اپلیکیشن و کارکرد آفلاین
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker ثبت شد', reg))
-      .catch(err => console.log('خطا در ثبت Service Worker', err));
-  });
-}
 </script>
 </body>
 </html>
