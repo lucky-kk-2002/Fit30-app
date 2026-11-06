@@ -6,114 +6,56 @@
 <title>پنل مدیریت - برنامه ۳۰ روزه</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f172a; --card: #1e293b; --ink: #f8fafc; --muted: #94a3b8;
-    --line: #334155; --accent: #3b82f6; --accent-2: #10b981;
-    --danger: #ef4444; --radius: 16px;
-  }
+  :root { --bg: #0f172a; --card: #1e293b; --ink: #f8fafc; --muted: #94a3b8; --line: #334155; --accent: #3b82f6; --danger: #ef4444; --radius: 16px; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: 'Vazirmatn', system-ui, sans-serif;
-    background: var(--bg); color: var(--ink); margin: 0;
-    min-height: 100dvh; display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .admin-card {
-    background: var(--card); border-radius: var(--radius);
-    width: 100%; max-width: 480px; padding: 24px;
-    box-shadow: 0 10px 40px rgba(0,0,0,.5); border: 1px solid var(--line);
-  }
-  .header { text-align: center; margin-bottom: 24px; }
-  .header h1 { font-size: 20px; margin: 0 0 8px; color: #fff; }
-  .header p { font-size: 13px; color: var(--muted); margin: 0; }
-
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  .field input {
-    width: 100%; padding: 12px; border-radius: 10px;
-    border: 1px solid var(--line); background: rgba(15,23,42,.5);
-    color: #fff; font-family: inherit; font-size: 14px; transition: .2s;
-  }
+  body { font-family: 'Vazirmatn', system-ui, sans-serif; background: var(--bg); color: var(--ink); margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .admin-card { background: var(--card); border-radius: var(--radius); width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,.5); border: 1px solid var(--line); }
+  .header { text-align: center; margin-bottom: 24px; } .header h1 { font-size: 20px; margin: 0 0 8px; } .header p { font-size: 13px; color: var(--muted); margin: 0; }
+  .field { margin-bottom: 16px; } .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .field input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(15,23,42,.5); color: #fff; font-family: inherit; font-size: 14px; }
   .field input:focus { outline: none; border-color: var(--accent); }
-
-  .btn {
-    width: 100%; padding: 12px; border-radius: 10px;
-    border: none; font-family: inherit; font-size: 14px;
-    font-weight: 700; cursor: pointer; transition: .2s;
-    display: flex; justify-content: center; align-items: center; gap: 8px;
-  }
-  .btn-primary { background: var(--accent); color: #fff; margin-top: 10px; }
-  .btn-primary:hover { background: #2563eb; }
-  .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); margin-top: 10px; }
-  .btn-outline:hover { background: rgba(255,255,255,.05); }
-  .btn-danger { background: var(--danger); color: #fff; margin-top: 10px; }
-  .btn-success { background: var(--accent-2); color: #fff; margin-top: 10px; }
-
+  .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--accent); color: #fff; margin-top: 10px; } .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); margin-top: 10px; } .btn-danger { background: var(--danger); color: #fff; margin-top: 10px; }
   .hidden { display: none !important; }
-
-  /* Status Messages */
   .status { padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 16px; display: none; }
-  .status.show { display: block; }
-  .status.error { background: rgba(239, 68, 68, .1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, .3); }
-  .status.success { background: rgba(16, 185, 129, .1); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, .3); }
-
+  .status.show { display: block; } .status.error { background: rgba(239, 68, 68, .1); color: #fca5a5; } .status.success { background: rgba(16, 185, 129, .1); color: #6ee7b7; }
   .divider { height: 1px; background: var(--line); margin: 24px 0; }
 </style>
 </head>
 <body>
 
 <div class="admin-card" id="loginScreen">
-  <div class="header">
-    <h1>پنل مدیریت</h1>
-    <p>لطفاً رمز عبور خود را وارد کنید</p>
-  </div>
-  <div class="field">
-    <input type="password" id="adminPass" placeholder="رمز عبور ادمین...">
-  </div>
+  <div class="header"><h1>پنل مدیریت</h1><p>لطفاً رمز عبور خود را وارد کنید</p></div>
+  <div class="field"><input type="password" id="adminPass" placeholder="رمز عبور ادمین..."></div>
   <button class="btn btn-primary" id="loginBtn">ورود به پنل</button>
   <div class="status error" id="loginError">رمز عبور اشتباه است!</div>
 </div>
 
 <div class="admin-card hidden" id="adminPanel">
-  <div class="header">
-    <h1>مدیریت سیستم</h1>
-    <p>تنظیمات کلیدهای هوش مصنوعی</p>
-  </div>
-
+  <div class="header"><h1>مدیریت سیستم</h1><p>تنظیمات کلیدهای هوش مصنوعی</p></div>
   <div class="field">
     <label>کلید API گوگل (Gemini) - رایگان</label>
     <input type="password" id="geminiKey" placeholder="AIza...">
     <small style="color:var(--muted); font-size:11px; margin-top:4px; display:block;">این کلید برای همه کاربران (در این مرورگر) فعال می‌شود.</small>
   </div>
-
   <button class="btn btn-outline" id="testGeminiBtn">تست اتصال به Gemini</button>
-  
   <div class="divider"></div>
-
   <div class="field">
     <label>کلید API اوپن‌ای‌آی (OpenAI) - پولی</label>
     <input type="password" id="openaiKey" placeholder="sk-...">
   </div>
-
   <button class="btn btn-primary" id="saveBtn">ذخیره تنظیمات</button>
   <button class="btn btn-danger" id="logoutBtn">خروج از پنل</button>
-
   <div class="status" id="statusMsg"></div>
 </div>
 
 <script>
-  /* 
-    رمز عبور پنل ادمین: 
-    می‌توانید کلمه 1234 را در خط زیر تغییر دهید تا رمز دلخواه شما شود 
-  */
   const ADMIN_PASSWORD = "1234";
-  
   const loginScreen = document.getElementById('loginScreen');
   const adminPanel = document.getElementById('adminPanel');
   const adminPassInput = document.getElementById('adminPass');
   const loginBtn = document.getElementById('loginBtn');
   const loginError = document.getElementById('loginError');
-  
   const geminiKeyInput = document.getElementById('geminiKey');
   const openaiKeyInput = document.getElementById('openaiKey');
   const testGeminiBtn = document.getElementById('testGeminiBtn');
@@ -121,94 +63,45 @@
   const logoutBtn = document.getElementById('logoutBtn');
   const statusMsg = document.getElementById('statusMsg');
 
-  // بررسی وضعیت لاگین (با سشن استوریج)
-  if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-    showPanel();
-  }
+  if (sessionStorage.getItem('adminLoggedIn') === 'true') showPanel();
 
   loginBtn.addEventListener('click', () => {
-    if (adminPassInput.value === ADMIN_PASSWORD) {
-      sessionStorage.setItem('adminLoggedIn', 'true');
-      showPanel();
-    } else {
-      loginError.classList.add('show');
-      setTimeout(() => loginError.classList.remove('show'), 3000);
-    }
+    if (adminPassInput.value === ADMIN_PASSWORD) { sessionStorage.setItem('adminLoggedIn', 'true'); showPanel(); }
+    else { loginError.classList.add('show'); setTimeout(() => loginError.classList.remove('show'), 3000); }
   });
+  adminPassInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginBtn.click(); });
 
-  adminPassInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') loginBtn.click();
-  });
+  function showPanel() { loginScreen.classList.add('hidden'); adminPanel.classList.remove('hidden'); loadKeys(); }
+  logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('adminLoggedIn'); loginScreen.classList.remove('hidden'); adminPanel.classList.add('hidden'); adminPassInput.value = ''; });
 
-  function showPanel() {
-    loginScreen.classList.add('hidden');
-    adminPanel.classList.remove('hidden');
-    loadKeys();
-  }
+  function showStatus(msg, type) { statusMsg.textContent = msg; statusMsg.className = `status show ${type}`; setTimeout(() => statusMsg.classList.remove('show'), 4000); }
 
-  logoutBtn.addEventListener('click', () => {
-    sessionStorage.removeItem('adminLoggedIn');
-    loginScreen.classList.remove('hidden');
-    adminPanel.classList.add('hidden');
-    adminPassInput.value = '';
-  });
-
-  function showStatus(msg, type) {
-    statusMsg.textContent = msg;
-    statusMsg.className = `status show ${type}`;
-    setTimeout(() => statusMsg.classList.remove('show'), 4000);
-  }
-
-  function loadKeys() {
-    // خواندن کلیدهای ذخیره شده در مرورگر
-    geminiKeyInput.value = localStorage.getItem('fit30_master_gemini') || '';
-    openaiKeyInput.value = localStorage.getItem('fit30_master_openai') || '';
-  }
+  function loadKeys() { geminiKeyInput.value = localStorage.getItem('fit30_master_gemini') || ''; openaiKeyInput.value = localStorage.getItem('fit30_master_openai') || ''; }
 
   saveBtn.addEventListener('click', () => {
-    const gKey = geminiKeyInput.value.trim();
-    const oKey = openaiKeyInput.value.trim();
-
-    if (gKey) localStorage.setItem('fit30_master_gemini', gKey);
-    else localStorage.removeItem('fit30_master_gemini');
-
-    if (oKey) localStorage.setItem('fit30_master_openai', oKey);
-    else localStorage.removeItem('fit30_master_openai');
-
-    showStatus('تنظیمات با موفقیت ذخیره شد. از این پس برنامه از این کلیدها استفاده می‌کند.', 'success');
+    const gKey = geminiKeyInput.value.trim(); const oKey = openaiKeyInput.value.trim();
+    if (gKey) localStorage.setItem('fit30_master_gemini', gKey); else localStorage.removeItem('fit30_master_gemini');
+    if (oKey) localStorage.setItem('fit30_master_openai', oKey); else localStorage.removeItem('fit30_master_openai');
+    showStatus('تنظیمات با موفقیت ذخیره شد.', 'success');
   });
 
   testGeminiBtn.addEventListener('click', async () => {
     const key = geminiKeyInput.value.trim();
-    if (!key) {
-      showStatus('لطفاً ابتدا یک کلید Gemini وارد کنید.', 'error');
-      return;
-    }
-
-    testGeminiBtn.textContent = 'در حال تست...';
-    testGeminiBtn.disabled = true;
+    if (!key) { showStatus('لطفاً ابتدا یک کلید Gemini وارد کنید.', 'error'); return; }
+    testGeminiBtn.textContent = 'در حال تست...'; testGeminiBtn.disabled = true;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+      // مدل به gemini-2.0-flash تغییر یافت
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] })
       });
-
-      if (response.ok) {
-        showStatus('اتصال برقرار است! کلید Gemini معتبر می‌باشد.', 'success');
-      } else {
-        const err = await response.json();
-        showStatus('خطا: ' + (err.error?.message || 'کلید نامعتبر است'), 'error');
-      }
-    } catch (e) {
-      showStatus('خطا در ارتباط با سرور گوگل. اینترنت را چک کنید.', 'error');
-    }
-
-    testGeminiBtn.textContent = 'تست اتصال به Gemini';
-    testGeminiBtn.disabled = false;
+      if (response.ok) showStatus('اتصال برقرار است! کلید Gemini معتبر می‌باشد.', 'success');
+      else { const err = await response.json(); showStatus('خطا: ' + (err.error?.message || 'کلید نامعتبر است'), 'error'); }
+    } catch (e) { showStatus('خطا در ارتباط با سرور گوگل.', 'error'); }
+    testGeminiBtn.textContent = 'تست اتصال به Gemini'; testGeminiBtn.disabled = false;
   });
-
 </script>
 </body>
 </html>
