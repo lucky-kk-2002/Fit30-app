@@ -17,7 +17,7 @@
   .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
   .btn-primary { background: var(--accent); color: #fff; margin-top: 10px; } .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--ink); margin-top: 10px; } .btn-danger { background: var(--danger); color: #fff; margin-top: 10px; }
   .hidden { display: none !important; }
-  .status { padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 16px; display: none; }
+  .status { padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 16px; display: none; line-height: 1.6; }
   .status.show { display: block; } .status.error { background: rgba(239, 68, 68, .1); color: #fca5a5; } .status.success { background: rgba(16, 185, 129, .1); color: #6ee7b7; }
   .divider { height: 1px; background: var(--line); margin: 24px 0; }
 </style>
@@ -74,7 +74,7 @@
   function showPanel() { loginScreen.classList.add('hidden'); adminPanel.classList.remove('hidden'); loadKeys(); }
   logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('adminLoggedIn'); loginScreen.classList.remove('hidden'); adminPanel.classList.add('hidden'); adminPassInput.value = ''; });
 
-  function showStatus(msg, type) { statusMsg.textContent = msg; statusMsg.className = `status show ${type}`; setTimeout(() => statusMsg.classList.remove('show'), 4000); }
+  function showStatus(msg, type) { statusMsg.textContent = msg; statusMsg.className = `status show ${type}`; setTimeout(() => statusMsg.classList.remove('show'), 5000); }
 
   function loadKeys() { geminiKeyInput.value = localStorage.getItem('fit30_master_gemini') || ''; openaiKeyInput.value = localStorage.getItem('fit30_master_openai') || ''; }
 
@@ -98,8 +98,9 @@
         body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] })
       });
       if (response.ok) showStatus('اتصال برقرار است! کلید Gemini معتبر می‌باشد.', 'success');
-      else { const err = await response.json(); showStatus('خطا: ' + (err.error?.message || 'کلید نامعتبر است'), 'error'); }
-    } catch (e) { showStatus('خطا در ارتباط با سرور گوگل.', 'error'); }
+      else { const err = await response.json(); showStatus('خطا از سمت گوگل: ' + (err.error?.message || 'کلید نامعتبر است'), 'error'); }
+    } catch (e) { showStatus('خطای شبکه: ارتباط با سرور گوگل برقرار نشد.', 'error'); }
+    
     testGeminiBtn.textContent = 'تست اتصال به Gemini'; testGeminiBtn.disabled = false;
   });
 </script>
