@@ -14,9 +14,6 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -77,17 +74,6 @@
   .install-btn:hover{background:rgba(47,124,246,.18);}
   .install-btn:active{transform:scale(.97);}
 
-  .ios-hint{
-    max-width:320px;
-    font-size:12px; color:var(--muted);
-    background:rgba(255,255,255,.7);
-    border:1px dashed var(--line);
-    border-radius:12px;
-    padding:10px 14px;
-    line-height:1.8;
-  }
-  .ios-hint b{color:var(--accent);}
-
   /* ============ ONBOARDING ============ */
   .onboarding{
     min-height:100vh; min-height:100dvh;
@@ -113,6 +99,7 @@
     display:flex; align-items:center; gap:6px;
   }
   .field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .field-row.three-col{grid-template-columns:1fr 1fr 1fr;}
   .field label{
     display:block; font-size:12px; color:var(--muted);
     font-weight:600; margin-bottom:5px;
@@ -452,9 +439,23 @@
   @media (display-mode: standalone) and (min-width:640px){
     body{padding:0;}
   }
+
+  /* Loading Overlay */
+  .loading-overlay{position:fixed; inset:0; z-index:1000; background:rgba(255,255,255,.95); display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(5px);}
+  .loading-overlay.show{display:flex;}
+  .spinner{width:50px; height:50px; border:5px solid #e5ebf4; border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{font-size:15px; font-weight:700; color:var(--accent); text-align:center; padding:0 20px;}
 </style>
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">هوش مصنوعی گوگل (Gemini) در حال طراحی برنامه شماست...</div>
+  <div style="font-size:12px; color:var(--muted); margin-top:8px;">(این فرآیند ممکن است ۱۰ تا ۲۰ ثانیه طول بکشد)</div>
+</div>
 
 <!-- ============ SPLASH ============ -->
 <section class="splash" id="splash">
@@ -468,18 +469,22 @@
   <div class="onb-wrap">
     <button class="back-link" id="onbBack">← بازگشت</button>
     <h2 class="onb-title">بیایید برنامه‌ات را بسازیم</h2>
-    <p class="onb-sub">۴ سوال کوتاه تا برنامه شخصی ۳۰ روزه</p>
+    <p class="onb-sub">اطلاعات خود را وارد کنید تا هوش مصنوعی برنامه اختصاصی شما را بسازد</p>
 
     <div class="onb-card">
       <h3>📏 اطلاعات بدنی</h3>
-      <div class="field-row">
+      <div class="field-row three-col">
         <div class="field">
-          <label>قد (سانتی‌متر)</label>
-          <input type="number" id="fHeight" inputmode="numeric" placeholder="مثلاً ۱۷۵" min="100" max="250" step="0.5">
+          <label>سن</label>
+          <input type="number" id="fAge" placeholder="مثلاً ۲۸" min="10" max="100">
         </div>
         <div class="field">
-          <label>وزن (کیلوگرم)</label>
-          <input type="number" id="fWeight" inputmode="decimal" placeholder="مثلاً ۸۰" min="30" max="300" step="0.1">
+          <label>قد (cm)</label>
+          <input type="number" id="fHeight" placeholder="۱۷۵" min="100" max="250">
+        </div>
+        <div class="field">
+          <label>وزن (kg)</label>
+          <input type="number" id="fWeight" placeholder="۸۰" min="30" max="300">
         </div>
       </div>
       <div class="bmi-inline" id="fBmi"></div>
@@ -488,41 +493,33 @@
     <div class="onb-card">
       <h3>۱. هدف اصلی شما چیست؟</h3>
       <div class="options" id="qGoal">
-        <button class="option-btn active" data-value="loss">کاهش وزن<small>چربی‌سوزی و تناسب</small></button>
-        <button class="option-btn" data-value="maintain">تثبیت وزن<small>حفظ وضعیت فعلی</small></button>
-        <button class="option-btn" data-value="gain">افزایش حجم<small>عضله‌سازی</small></button>
-        <button class="option-btn" data-value="health">بهبود سلامت<small>انرژی و نشاط</small></button>
+        <button class="option-btn active" data-value="کاهش وزن">کاهش وزن<small>چربی‌سوزی</small></button>
+        <button class="option-btn" data-value="تثبیت وزن">تثبیت وزن<small>حفظ وضعیت</small></button>
+        <button class="option-btn" data-value="افزایش حجم و عضله">افزایش حجم<small>عضله‌سازی</small></button>
+        <button class="option-btn" data-value="بهبود سلامت عمومی">بهبود سلامت<small>انرژی و نشاط</small></button>
       </div>
     </div>
 
     <div class="onb-card">
-      <h3>۲. وزن مورد نظر شما در پایان ماه؟</h3>
-      <div class="options" id="qTarget">
-        <button class="option-btn" disabled style="grid-column:1/-1; color:var(--muted);">ابتدا وزن خود را وارد کنید</button>
-      </div>
-    </div>
-
-    <div class="onb-card">
-      <h3>۳. سطح فعالیت روزانه شما؟</h3>
+      <h3>۲. سطح فعالیت روزانه شما؟</h3>
       <div class="options" id="qActivity">
-        <button class="option-btn" data-value="low">کم‌تحرک<small>کمتر از ۳ روز ورزش</small></button>
-        <button class="option-btn active" data-value="mid">متوسط<small>۳ تا ۴ روز ورزش</small></button>
-        <button class="option-btn" data-value="high">فعال<small>۵ تا ۶ روز ورزش</small></button>
-        <button class="option-btn" data-value="veryHigh">خیلی فعال<small>روزانه و شدید</small></button>
+        <button class="option-btn" data-value="کم‌تحرک (کمتر از ۳ روز ورزش)">کم‌تحرک</button>
+        <button class="option-btn active" data-value="متوسط (۳ تا ۴ روز ورزش)">متوسط</button>
+        <button class="option-btn" data-value="فعال (۵ تا ۶ روز ورزش)">فعال</button>
+        <button class="option-btn" data-value="خیلی فعال (روزانه و شدید)">خیلی فعال</button>
       </div>
     </div>
 
     <div class="onb-card">
-      <h3>۴. فستینگ متناوب؟</h3>
+      <h3>۳. فستینگ متناوب؟</h3>
       <div class="options" id="qFasting">
         <button class="option-btn active" data-value="16:8">۱۶:۸<small>پنجره ۸ ساعته</small></button>
         <button class="option-btn" data-value="14:10">۱۴:۱۰<small>پنجره ۱۰ ساعته</small></button>
-        <button class="option-btn" data-value="none">خیر<small>بدون فستینگ</small></button>
-        <button class="option-btn" data-value="later">بعداً<small>از تنظیمات اضافه کن</small></button>
+        <button class="option-btn" data-value="بدون فستینگ">خیر<small>بدون فستینگ</small></button>
       </div>
     </div>
 
-    <button class="build-btn" id="buildBtn">ساخت برنامه من</button>
+    <button class="build-btn" id="buildBtn">ساخت برنامه من با هوش مصنوعی</button>
   </div>
 </section>
 
@@ -534,7 +531,7 @@
       <button class="settings-btn" id="settingsBtn">⚙️</button>
     </div>
     <h1>برنامه شخصی ۳۰ روزه</h1>
-    <p class="sub">تمرین در خانه • رژیم غذایی • پیشرفت روزانه</p>
+    <p class="sub" id="headerSub">برنامه اختصاصی شما</p>
     <div class="bar"><i id="fill"></i></div>
     <div class="hud-txt">
       <span><b id="ptext">۰</b> از <span id="ptotal">۰</span> کار انجام شده</span>
@@ -560,19 +557,22 @@
       <span>⚙️ تنظیمات</span>
       <button class="modal-close" id="settingsClose">×</button>
     </h3>
+    
+    <div class="modal-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+      <span>کلید API اختصاصی شما (Gemini):</span>
+      <input type="password" id="apiKeyInput" placeholder="AIza..." style="width:100%; padding:8px; border-radius:8px; border:1.5px solid var(--line);">
+      <small style="color:var(--muted); font-size:11px;">اگر ادمین کلید اصلی را تنظیم کرده باشد، نیازی به وارد کردن این فیلد نیست.</small>
+    </div>
+
     <div class="modal-row">
       <span>فستینگ متناوب</span>
       <label class="switch">
-        <input type="checkbox" id="fastToggle">
-        <span class="slider"></span>
+        <input type="checkbox" id="fastToggle"><span class="slider"></span>
       </label>
     </div>
     <div class="modal-row" id="fastTypeRow">
       <span>نوع فستینگ</span>
-      <select id="fastType">
-        <option value="16:8">۱۶:۸</option>
-        <option value="14:10">۱۴:۱۰</option>
-      </select>
+      <select id="fastType"><option value="16:8">۱۶:۸</option><option value="14:10">۱۴:۱۰</option></select>
     </div>
     <div class="modal-actions">
       <button class="danger" id="restartBtn">شروع مجدد</button>
@@ -597,7 +597,6 @@ if (isStandalone || wasInstalled) {
     window.__deferredPrompt = e;
     if(installBtn) installBtn.hidden = false;
   });
-  
   if(installBtn) {
     installBtn.addEventListener('click', async function(){
       if (!window.__deferredPrompt) return;
@@ -613,7 +612,6 @@ if (isStandalone || wasInstalled) {
       installBtn.hidden = true;
     });
   }
-
   window.addEventListener('appinstalled', function(){
     localStorage.setItem('fit30-installed', 'true');
     if(installBtn) installBtn.style.display = 'none';
@@ -636,14 +634,17 @@ const toFa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 const escHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const STORAGE_KEY = 'fit30-v3';
+const STORAGE_KEY = 'fit30-v4';
 let state = {
   profile: null,
+  aiPlan: null,
+  apiKey: '',
   fastingEnabled: false,
   fastingType: '16:8',
   checks: {},
   notes: {}
 };
+
 try {
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
   if (saved) state = { ...state, ...saved };
@@ -654,84 +655,15 @@ function saveState(){
 }
 
 let openWeek = 1;
-
-const GOAL_LABELS = { loss:'کاهش وزن', maintain:'تثبیت وزن', gain:'افزایش حجم', health:'بهبود سلامت' };
-const ACTIVITY_LABELS = { low:'کم‌تحرک', mid:'متوسط', high:'فعال', veryHigh:'خیلی فعال' };
-const ACTIVITY_MULT = { low: 1.2, mid: 1.375, high: 1.55, veryHigh: 1.725 }; // ضریب فعالیت برای TDEE
-
-const MEAL_TEMPLATES = {
-  loss: [
-    ['صبحانه — ۲ تخم‌مرغ آب‌پز + خیار و گوجه + چای سبز','ناهار — سینه مرغ گریل ۱۵۰ گرم + سالاد بزرگ + ۱ ق‌غ روغن زیتون','شام — سوپ سبزیجات + ماست کم‌چرب + نان سنگک کوچک','میان‌وعده — ۱۰ عدد بادام + ۱ سیب'],
-    ['صبحانه — فرنی جو دوسر با شیر + دارچین','ناهار — ماهی گریل + کینوا + سبزیجات بخارپز','شام — سالاد مرغ با لیمو و روغن زیتون','میان‌وعده — ماست یونانی کم‌چرب + خیار'],
-    ['صبحانه — املت ۲ تخم‌مرغ با اسفناج + ۱ برش نان سبوس‌دار','ناهار — خوراک عدسی + سالاد فصل + ماست کم‌چرب','شام — تن ماهی + سالاد + آب لیمو','میان‌وعده — ۱ مشت توت + ۵ بادام']
-  ],
-  maintain: [
-    ['صبحانه — ۲ تخم‌مرغ + نان سبوس‌دار + خیار و گوجه','ناهار — سینه مرغ گریل + نصف پیمانه برنج + سالاد','شام — ماست + ۱ میوه + ۱۰ بادام'],
-    ['صبحانه — جو دوسر + شیر + موز + دارچین','ناهار — ماهی گریل + سیب‌زمینی آب‌پز + سبزیجات','شام — پنیر کم‌نمک + خیار + ۵ گردو + نان سنگک'],
-    ['صبحانه — املت + نان سبوس‌دار + چای سبز','ناهار — خوراک عدسی + سالاد فصل + ماست','شام — شیر + ۲ خرما + چند بادام']
-  ],
-  gain: [
-    ['صبحانه — ۳ تخم‌مرغ + نان سبوس‌دار + پنیر + گردو','ناهار — سینه مرغ ۲۰۰ گرم + برنج + ماست','پس از تمرین — شیک پروتئین + موز','شام — گوشت گریل + کینوا + سبزیجات'],
-    ['صبحانه — جو دوسر + شیر + موز + کره بادام‌زمینی','ناهار — ماهی + برنج + سالاد','پس از تمرین — ۲ تخم‌مرغ + نان','شام — ماست یونانی + میوه + گردو'],
-    ['صبحانه — املت ۳ تخم‌مرغ + پنیر + نان','ناهار — عدس + برنج + مرغ','پس از تمرین — شیر + خرما','شام — تن ماهی + سیب‌زمینی آب‌پز + سالاد']
-  ],
-  health: [
-    ['صبحانه — جو دوسر + میوه + دانه‌ها','ناهار — سالاد بزرگ + مرغ گریل + روغن زیتون','شام — سوپ سبزیجات + نان سبوس‌دار'],
-    ['صبحانه — ماست + گرانولا + توت','ناهار — ماهی + سبزیجات + برنج قهوه‌ای','شام — املت سبزیجات + نان'],
-    ['صبحانه — اسموتی سبز + نان تست','ناهار — عدسی + سالاد فصل','شام — مرغ + سبزیجات کبابی']
-  ]
-};
-
-const F_1410 = '۱۴:۱۰ — پنجره غذا: ۱۰:۰۰ تا ۲۰:۰۰';
-const F_168  = '۱۶:۸ — پنجره غذا: ۱۲:۰۰ تا ۲۰:۰۰';
-
-const basePlan = [
-  { day:1, week:1, title:'شروع آرام', workout:['گرم‌کردن: ۳ دقیقه راه‌رفتن در جا + چرخش دست‌ها','اسکات ۳ × ۱۲','شنا روی زانو ۳ × ۸','پل باسن ۳ × ۱۵','پلانک ۳ × ۲۰ ثانیه','سردکردن و کشش ۵ دقیقه'] },
-  { day:2, week:1, title:'استراحت فعال', workout:['پیاده‌روی ۲۵ تا ۳۰ دقیقه','کشش و تحرک مفاصل ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
-  { day:3, week:1, title:'پایین‌تنه و مرکز بدن', workout:['گرم‌کردن ۳ دقیقه','لانژ عقب ۳ × ۱۰ (هر پا)','دیوارنشسته ۳ × ۳۰ ثانیه','ساق پا ۳ × ۱۵','دد باگ ۳ × ۱۰','کرانچ ۳ × ۱۲','کشش پاها ۵ دقیقه'] },
-  { day:4, week:1, title:'بالاتنه و هوازی', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۰','پارویی با بطری ۳ × ۱۲','پرس سرشانه ۳ × ۱۰','سوپرمن ۳ × ۱۲','جک ۳ × ۳۰ ثانیه','کشش ۵ دقیقه'] },
-  { day:5, week:1, title:'مرکز بدن و کشش', workout:['پلانک ۳ × ۳۰ ثانیه','پلانک پهلو ۲ × ۲۰ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۱۵','بِرد داگ ۳ × ۱۰','کشش ۸ دقیقه'] },
-  { day:6, week:1, title:'تمام بدن', workout:['گرم‌کردن ۳ دقیقه','اسکات ۳ × ۱۵','شنا روی زانو ۳ × ۱۰','پل باسن تک‌پا ۳ × ۱۰ (هر پا)','پلانک ۳ × ۳۰ ثانیه','راه‌پیمایی سریع ۵ دقیقه'] },
-  { day:7, week:1, title:'استراحت و بازبینی', workout:['پیاده‌روی ۳۰ دقیقه','کشش و تحرک مفاصل ۱۰ دقیقه'] },
-  { day:8, week:2, title:'پایین‌تنه و مرکز بدن', workout:['گرم‌کردن ۳ دقیقه','لانژ عقب ۳ × ۱۲ (هر پا)','دیوارنشسته ۳ × ۴۰ ثانیه','ساق پا ۳ × ۲۰','دد باگ ۳ × ۱۲','کرانچ ۳ × ۱۵','کشش ۵ دقیقه'] },
-  { day:9, week:2, title:'بالاتنه و هوازی', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۲','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۲','سوپرمن ۳ × ۱۵','جک ۳ × ۴۰ ثانیه','کشش ۵ دقیقه'] },
-  { day:10, week:2, title:'HIIT مقدماتی', workout:['۶ راند: ۲۰ ثانیه تلاش + ۴۰ ثانیه استراحت','حرکات: اسکات، کوهنورد، زانو بلند، برپی ساده','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
-  { day:11, week:2, title:'استراحت فعال', workout:['پیاده‌روی ۳۰ دقیقه','کشش ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
-  { day:12, week:2, title:'مرکز بدن', workout:['پلانک ۳ × ۴۰ ثانیه','پلانک پهلو ۲ × ۲۵ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۱۸','بِرد داگ ۳ × ۱۲','کشش ۸ دقیقه'] },
-  { day:13, week:2, title:'تمام بدن', workout:['گرم‌کردن ۳ دقیقه','اسکات ۳ × ۲۰','شنا روی زانو ۳ × ۱۲','پل باسن ۳ × ۲۰','پلانک ۳ × ۴۰ ثانیه','کوهنورد ۳ × ۲۰ ثانیه'] },
-  { day:14, week:2, title:'مدار تمام بدن', workout:['۳ دور: ۱۰ اسکات، ۸ شنا، ۱۲ پل باسن، ۲۰ ثانیه پلانک، ۱۵ جک','۳۰ ثانیه استراحت بین حرکات'] },
-  { day:15, week:3, title:'بالاتنه', workout:['گرم‌کردن ۳ دقیقه','شنا شیب‌دار ۳ × ۱۵','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۲','دیپ صندلی ۳ × ۱۰','پلانک ۳ × ۴۵ ثانیه'] },
-  { day:16, week:3, title:'HIIT', workout:['۸ راند: ۳۰ ثانیه تلاش + ۳۰ ثانیه استراحت','حرکات: اسکات پرشی، کوهنورد، برپی، زانو بلند','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
-  { day:17, week:3, title:'استراحت فعال', workout:['پیاده‌روی ۳۰ تا ۴۰ دقیقه','کشش ۱۰ دقیقه'] },
-  { day:18, week:3, title:'پایین‌تنه', workout:['گرم‌کردن ۳ دقیقه','اسکات ۴ × ۱۵','لانژ ۳ × ۱۲ (هر پا)','پل باسن تک‌پا ۳ × ۱۲','دیوارنشسته ۳ × ۴۵ ثانیه','ساق پا ۳ × ۲۰'] },
-  { day:19, week:3, title:'مرکز بدن و کشش', workout:['پلانک ۳ × ۴۵ ثانیه','پلانک پهلو ۳ × ۲۵ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۲۰','بِرد داگ ۳ × ۱۲','کشش ۱۰ دقیقه'] },
-  { day:20, week:3, title:'تمام بدن', workout:['۴ دور: ۱۲ اسکات، ۱۰ شنا، ۱۵ پل باسن، ۳۰ ثانیه پلانک، ۲۰ جک','۵ دقیقه گرم‌کردن + ۵ دقیقه کشش'] },
-  { day:21, week:3, title:'مدار و هوازی', workout:['۴ دور مدار روز ۱۴','۵ دقیقه راه‌پیمایی سریع','کشش ۵ دقیقه'] },
-  { day:22, week:4, title:'تمام بدن', workout:['گرم‌کردن ۵ دقیقه','اسکات ۴ × ۱۵','شنا ۳ × ۱۲','پل باسن ۳ × ۲۰','پلانک ۳ × ۶۰ ثانیه','کوهنورد ۳ × ۳۰ ثانیه'] },
-  { day:23, week:4, title:'HIIT', workout:['۸ راند: ۳۰ ثانیه تلاش + ۳۰ ثانیه استراحت','حرکات: برپی، اسکات پرشی، کوهنورد، زانو بلند','۵ دقیقه گرم‌کردن + ۵ دقیقه سردکردن'] },
-  { day:24, week:4, title:'استراحت', workout:['پیاده‌روی آرام ۳۰ دقیقه','کشش ۱۰ دقیقه','تنفس عمیق ۵ دقیقه'] },
-  { day:25, week:4, title:'پایین‌تنه', workout:['گرم‌کردن ۳ دقیقه','اسکات پرشی ۳ × ۱۰','لانژ ۳ × ۱۵ (هر پا)','پل باسن ۳ × ۲۵','دیوارنشسته ۳ × ۶۰ ثانیه','ساق پا ۳ × ۲۵'] },
-  { day:26, week:4, title:'بالاتنه', workout:['گرم‌کردن ۳ دقیقه','شنا ۳ × ۱۰','پارویی ۳ × ۱۵','پرس سرشانه ۳ × ۱۵','دیپ صندلی ۳ × ۱۲','پلانک ۳ × ۶۰ ثانیه'] },
-  { day:27, week:4, title:'مرکز بدن', workout:['پلانک ۳ × ۶۰ ثانیه','پلانک پهلو ۳ × ۳۰ ثانیه (هر طرف)','کرانچ دوچرخه ۳ × ۲۰','بِرد داگ ۳ × ۱۵','کشش ۱۰ دقیقه'] },
-  { day:28, week:4, title:'مدار نهایی', workout:['۴ دور: ۱۲ اسکات، ۱۰ شنا، ۱۵ پل باسن، ۳۰ ثانیه پلانک، ۲۰ جک','کشش ۵ دقیقه'] },
-  { day:29, week:4, title:'ارزیابی', workout:['اندازه‌گیری وزن و دور کمر','گرفتن عکس پیشرفت','پیاده‌روی ۳۰ دقیقه'] },
-  { day:30, week:4, title:'جشن و برنامه بعدی', workout:['تمرین سبک تمام بدن ۱۵ دقیقه','کشش ۱۰ دقیقه'] }
-];
-
-const GOAL_TIPS = {
-  loss: 'با توجه به محاسبات، کالری دریافتی شما کنترل شده است. پروتئین بالا سیر نگهتان می‌دارد.',
-  maintain: 'تعادل بین تمرین و تغذیه؛ روی کیفیت غذا تمرکز کنید. کالری شما برای حفظ وزن تنظیم شده است.',
-  gain: 'پروتئین کافی بخورید. کالری وعده‌ها برای افزایش حجم و عضله‌سازی تنظیم شده است.',
-  health: 'سبزیجات و میوه بیشتر، غذاهای فرآوری‌شده کمتر. برنامه برای انرژی پایدار تنظیم شده است.'
-};
-
 const splash = document.getElementById('splash');
 const onboarding = document.getElementById('onboarding');
 const shell = document.getElementById('app-shell');
 const settingsModal = document.getElementById('settingsModal');
 const app = document.getElementById('app');
+const loadingOverlay = document.getElementById('loadingOverlay');
 
-let formState = { goal:'loss', targetWeight:null, activity:'mid', fasting:'16:8' };
+let formState = { goal:'کاهش وزن', activity:'متوسط (۳ تا ۴ روز ورزش)', fasting:'16:8' };
+const fAge = document.getElementById('fAge');
 const fHeight = document.getElementById('fHeight');
 const fWeight = document.getElementById('fWeight');
 const fBmi = document.getElementById('fBmi');
@@ -756,22 +688,8 @@ function renderFbBmi(){
   fBmi.innerHTML = `شاخص BMI فعلی: <b style="color:${color}">${bmi.toFixed(1)}</b> — ${txt}`;
 }
 
-function rebuildTargetOptions(){
-  const w = parseFloat(fWeight.value);
-  const container = document.getElementById('qTarget');
-  if (!w || !isFinite(w) || w <= 0){
-    formState.targetWeight = null;
-    container.innerHTML = `<button class="option-btn" disabled style="grid-column:1/-1; color:var(--muted);">ابتدا وزن خود را وارد کنید</button>`;
-    return;
-  }
-  formState.targetWeight = null;
-  const deltas = { loss:[-3,-6,-10,0], maintain:[-2,0,2,4], gain:[0,2,4,6], health:[-3,0,2,-5] }[formState.goal];
-  container.innerHTML = deltas.map(d => {
-    const target = Math.round(w + d);
-    let desc = d === 0 ? 'تثبیت وزن' : (d > 0 ? `${d} کیلو افزایش` : `${Math.abs(d)} کیلو کاهش`);
-    return `<button class="option-btn" data-value="${target}"><b>${toFa(target)} کیلو</b><small>${desc}</small></button>`;
-  }).join('');
-}
+fHeight.addEventListener('input', renderFbBmi);
+fWeight.addEventListener('input', renderFbBmi);
 
 function attachOptionGroup(id, key){
   const container = document.getElementById(id);
@@ -780,199 +698,160 @@ function attachOptionGroup(id, key){
     if (!btn || btn.disabled) return;
     container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    if (key === 'targetWeight') formState.targetWeight = +btn.dataset.value;
-    else formState[key] = btn.dataset.value;
-    if (key === 'goal') rebuildTargetOptions();
+    formState[key] = btn.dataset.value;
   });
 }
 attachOptionGroup('qGoal', 'goal');
-attachOptionGroup('qTarget', 'targetWeight');
 attachOptionGroup('qActivity', 'activity');
 attachOptionGroup('qFasting', 'fasting');
 
-fHeight.addEventListener('input', renderFbBmi);
-fWeight.addEventListener('input', () => { renderFbBmi(); rebuildTargetOptions(); });
+/* =========================================================
+   AI Generator Function (Google Gemini + Master Key)
+   ========================================================= */
+async function generateWithAI(profile) {
+  // 1. بررسی کلید اصلی (Master Key) که توسط ادمین در admin.html تنظیم شده
+  const masterKey = localStorage.getItem('fit30_master_gemini');
+  
+  // 2. اگر ادمین کلید نداشت، از کلید شخصی کاربر استفاده کن
+  const apiKey = masterKey || state.apiKey; 
+  
+  if (!apiKey) throw new Error('کلید API یافت نشد. لطفاً از بخش تنظیمات (⚙️) کلید خود را وارد کنید یا با پشتیبانی تماس بگیرید.');
+
+  const prompt = `
+    You are a professional fitness and nutrition coach. 
+    Create a comprehensive 30-day diet and home-workout plan for a user with the following stats:
+    - Age: ${profile.age} years
+    - Height: ${profile.height} cm
+    - Weight: ${profile.weight} kg
+    - Goal: ${profile.goal}
+    - Activity Level: ${profile.activity}
+    - Fasting Preference: ${profile.fasting}
+    
+    IMPORTANT: Return ONLY a valid JSON object. No markdown, no explanations, no text outside the JSON. 
+    The JSON must exactly match this schema:
+    {
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "days": [
+            {
+              "dayNumber": 1,
+              "title": "Short focus title in Persian (e.g., Full Body)",
+              "workout": ["Exercise 1 in Persian with sets/reps", "Exercise 2", "..."],
+              "meals": ["Meal 1 in Persian", "Meal 2", "..."]
+            }
+            // ... 7 days per week
+          ]
+        }
+        // ... 4 weeks total (30 days)
+      ]
+    }
+    
+    Ensure meals are simple, realistic, and tailored to the goal in Persian. Ensure the output is strictly valid JSON.
+  `;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'خطا در ارتباط با هوش مصنوعی گوگل');
+    }
+
+    const data = await response.json();
+    let content = data.candidates[0].content.parts[0].text;
+    
+    content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+    const planJson = JSON.parse(content);
+    
+    return planJson;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
 /* =========================================================
-   ALGORITHM: Personalization (Workout & Diet)
+   Render Program
    ========================================================= */
-// 1. شخصی‌سازی تمرینات بر اساس BMI
-function getPersonalizedWorkout(d, profile) {
-  const bmi = computeBmi(profile.weight, profile.height);
-  const mult = ACTIVITY_MULT[profile.activity] || 1;
-  
-  return d.workout.map(text => {
-    let modifiedText = text;
-    
-    // اگر BMI بالای 30 بود، حرکات پرشی و آسیب‌زا با حرکات ایمن جایگزین شوند
-    if (bmi >= 30) {
-      modifiedText = modifiedText
-        .replace(/جک/g, 'قدم زدن سریع در جا')
-        .replace(/برپی/g, 'اسکات آرام + لمس زانو')
-        .replace(/اسکات پرشی/g, 'اسکات عادی')
-        .replace(/کوهنورد/g, 'پلانک ساده');
-    }
-    
-    // تنظیم تعداد تکرارها بر اساس سطح فعالیت (فقط اعداد تکرار)
-    if (mult !== 1) {
-       modifiedText = modifiedText.replace(/× (\d+)/g, (m, n) => '× ' + Math.round(+n * mult));
-    }
-    
-    return modifiedText;
-  });
-}
-
-// 2. شخصی‌سازی رژیم بر اساس کالری هدف
-function getPersonalizedMeals(profile) {
-  // محاسبه BMR (فرمول Mifflin-St Jeor با فرض سن ۳۰ سال)
-  // BMR = 10W + 6.25H - 5A + 5
-  const weight = profile.weight;
-  const height = profile.height;
-  const age = 30; // سن پیش‌فرض
-  const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-  
-  // محاسبه TDEE
-  const tdee = bmr * (ACTIVITY_MULT[profile.activity] || 1.375);
-  
-  let calorieTarget = tdee;
-  if (profile.goal === 'loss') calorieTarget -= 500;
-  if (profile.goal === 'gain') calorieTarget += 300;
-  
-  // گرد کردن به نزدیک‌ترین ۱۰
-  calorieTarget = Math.round(calorieTarget / 10) * 10;
-  profile.calorieTarget = calorieTarget; // ذخیره برای نمایش در هدر
-
-  // انتخاب تمپلیت پایه
-  let baseMeals = MEAL_TEMPLATES[profile.goal][(profile.dayNum - 1) % MEAL_TEMPLATES[profile.goal].length];
-  
-  // تنظیم وعده‌ها بر اساس کالری هدف
-  return baseMeals.map(meal => {
-    let m = meal;
-    
-    // اگر کالری هدف بالای 2600 بود (نیاز به حجم بیشتر)
-    if (calorieTarget > 2600) {
-      m = m.replace('۱۵۰ گرم', '۲۰۰ گرم').replace('نصف پیمانه', 'یک پیمانه').replace('۲ تخم‌مرغ', '۳ تخم‌مرغ');
-      // اضافه کردن میان وعده اگر نبود
-      if (!m.includes('میان‌وعده') && !m.includes('پس از تمرین')) {
-         m += ' + ۱ عدد میوه';
-      }
-    } 
-    // اگر کالری هدف زیر 1800 بود (نیاز به کاهش حجم)
-    else if (calorieTarget < 1800) {
-      m = m.replace('۲۰۰ گرم', '۱۵۰ گرم').replace('یک پیمانه', 'نصف پیمانه').replace('۳ تخم‌مرغ', '۲ تخم‌مرغ');
-      m = m.replace(' + ۱۰ بادام', '').replace(' + ۵ گردو', '').replace(' + نان سنگک', '');
-    }
-    
-    return m;
-  });
-}
-
-function getFastingText(){
-  if (!state.fastingEnabled) return null;
-  return state.fastingType === '16:8' ? F_168 : F_1410;
-}
-
-function dayHTML(d, profile){
-  const id = d.day;
-  
-  // تولید تمرین شخصی
-  const personalizedWorkout = getPersonalizedWorkout(d, profile);
-  const wItems = personalizedWorkout.map((t, i) => {
-    const key = `d${id}w${i}`;
-    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${t}</span></label>`;
-  }).join('');
-
-  // تولید غذاهای شخصی
-  profile.dayNum = id;
-  const personalizedMeals = getPersonalizedMeals(profile);
-  const mItems = personalizedMeals.map((t, i) => {
-    const key = `d${id}m${i}`;
-    return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${t}</span></label>`;
-  }).join('');
-
-  const fastingTxt = getFastingText();
-  const fastingBlock = fastingTxt ? `
-    <div class="block">
-      <h3>⏱ فستینگ</h3>
-      <label class="check"><input type="checkbox" data-key="d${id}f"${state.checks[`d${id}f`]?' checked':''}><span>${fastingTxt}</span></label>
-    </div>` : '';
-
-  const noteKey = `note_d${id}`;
-  const noteVal = state.notes[noteKey] || '';
-
-  return `
-  <details class="day" data-daynum="${id}"${id === 1 ? ' open' : ''}>
-    <summary>
-      <span class="dn">${toFa(id)}</span>
-      <span class="dt">
-        <span class="dtitle">${d.title}</span>
-        <span class="dmeta">روز ${toFa(id)}${fastingTxt ? ' • فستینگ ' + state.fastingType : ''}</span>
-      </span>
-      <span class="dprog">۰/۰</span>
-    </summary>
-    <div class="dbody">
-      ${fastingBlock}
-      <div class="block">
-        <h3>🏋️ تمرین شخصی‌سازی‌شده</h3>
-        ${wItems}
-      </div>
-      <div class="block">
-        <h3>🍽 رژیم (${toFa(profile.calorieTarget)} کالری)</h3>
-        ${mItems}
-      </div>
-      <p class="tip">💡 ${GOAL_TIPS[profile.goal]}</p>
-      <div class="block">
-        <h3>📝 یادداشت این روز</h3>
-        <textarea class="note" data-key="${noteKey}" rows="3"
-          placeholder="یادداشت خود را برای این روز بنویسید…">${escHtml(noteVal)}</textarea>
-      </div>
-    </div>
-  </details>`;
-}
-
-function generateProgramHTML(profile){
-  const weekSubs = { 1:'هفته سازگاری', 2:'هفته پیشرفت', 3:'هفته افزایش شدت', 4:'هفته تثبیت' };
-  
-  // محاسبه کالری برای هدر (فقط یکبار)
-  profile.dayNum = 1;
-  getPersonalizedMeals(profile); 
-  
-  return [1,2,3,4].map(w => {
-    const days = basePlan.filter(d => d.week === w);
-    const chips = days.map(d => `<button class="dchip" data-dayfilter="${d.day}">روز ${toFa(d.day)}</button>`).join('');
-    const isOpen = openWeek === w;
-    return `
-    <section class="week${isOpen ? ' open' : ''}" data-week="${w}">
-      <div class="week-head">
-        <span class="week-title">
-          <span class="wt">هفته ${toFa(w)}</span>
-          <span class="wsub">${weekSubs[w]} • روزهای ${toFa(days[0].day)} تا ${toFa(days[days.length-1].day)}</span>
-        </span>
-        <span class="week-right">
-          <span class="week-progress">۰/۰</span>
-          <span class="chev">▾</span>
-        </span>
-      </div>
-      <div class="week-body">
-        <nav class="daybar">
-          <button class="dchip active" data-dayfilter="all">همه</button>
-          ${chips}
-        </nav>
-        <div class="week-days">
-          ${days.map(d => dayHTML(d, profile)).join('')}
-        </div>
-      </div>
-    </section>`;
-  }).join('');
-}
-
 function renderProgram(){
   if (!state.profile) return;
+  
   const openStates = {};
   document.querySelectorAll('.day').forEach(d => { openStates[d.dataset.daynum] = d.open; });
   
-  app.innerHTML = generateProgramHTML(state.profile);
-  
+  let weeksHTML = '';
+  const weekSubs = { 1:'هفته سازگاری', 2:'هفته پیشرفت', 3:'هفته افزایش شدت', 4:'هفته تثبیت' };
+
+  if (state.aiPlan && state.aiPlan.weeks) {
+    weeksHTML = state.aiPlan.weeks.map((w, idx) => {
+      const wNum = w.weekNumber || (idx + 1);
+      const isOpen = openWeek === wNum;
+      
+      const daysHTML = w.days.map(d => {
+        const id = d.dayNumber;
+        const wItems = d.workout.map((t, i) => {
+          const key = `ai_d${id}w${i}`;
+          return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${escHtml(t)}</span></label>`;
+        }).join('');
+        
+        const mItems = d.meals.map((t, i) => {
+          const key = `ai_d${id}m${i}`;
+          return `<label class="check"><input type="checkbox" data-key="${key}"${state.checks[key]?' checked':''}><span>${escHtml(t)}</span></label>`;
+        }).join('');
+
+        const fastingTxt = state.fastingEnabled ? (state.fastingType === '16:8' ? '۱۶:۸ — پنجره غذا: ۱۲:۰۰ تا ۲۰:۰۰' : '۱۴:۱۰ — پنجره غذا: ۱۰:۰۰ تا ۲۰:۰۰') : null;
+        const fastingBlock = fastingTxt ? `<div class="block"><h3>⏱ فستینگ</h3><label class="check"><input type="checkbox" data-key="ai_d${id}f"${state.checks[`ai_d${id}f`]?' checked':''}><span>${fastingTxt}</span></label></div>` : '';
+
+        return `
+        <details class="day" data-daynum="${id}">
+          <summary>
+            <span class="dn">${toFa(id)}</span>
+            <span class="dt">
+              <span class="dtitle">${escHtml(d.title)}</span>
+              <span class="dmeta">روز ${toFa(id)} ${state.fastingEnabled ? '• با فستینگ' : ''}</span>
+            </span>
+            <span class="dprog">۰/۰</span>
+          </summary>
+          <div class="dbody">
+            ${fastingBlock}
+            <div class="block"><h3>🏋️ تمرین</h3>${wItems}</div>
+            <div class="block"><h3>🍽 تغذیه</h3>${mItems}</div>
+            <div class="block">
+              <h3>📝 یادداشت</h3>
+              <textarea class="note" data-key="note_ai_d${id}" rows="2" placeholder="یادداشت...">${escHtml(state.notes['note_ai_d'+id] || '')}</textarea>
+            </div>
+          </div>
+        </details>`;
+      }).join('');
+
+      const chips = w.days.map(d => `<button class="dchip" data-dayfilter="${d.dayNumber}">روز ${toFa(d.dayNumber)}</button>`).join('');
+
+      return `
+      <section class="week${isOpen ? ' open' : ''}" data-week="${wNum}">
+        <div class="week-head">
+          <span class="week-title"><span class="wt">هفته ${toFa(wNum)}</span><span class="wsub">${weekSubs[wNum] || ''}</span></span>
+          <span class="week-right"><span class="week-progress">۰/۰</span><span class="chev">▾</span></span>
+        </div>
+        <div class="week-body">
+          <nav class="daybar"><button class="dchip active" data-dayfilter="all">همه</button>${chips}</nav>
+          <div class="week-days">${daysHTML}</div>
+        </div>
+      </section>`;
+    }).join('');
+  } else {
+    weeksHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">برنامه‌ای یافت نشد. لطفاً مجدداً تلاش کنید.</div>`;
+  }
+
+  app.innerHTML = weeksHTML;
+
   document.querySelectorAll('.day').forEach(d => {
     if (openStates[d.dataset.daynum] !== undefined) d.open = openStates[d.dataset.daynum];
   });
@@ -985,17 +864,21 @@ function renderProgram(){
 
   const p = state.profile;
   const bmi = computeBmi(p.weight, p.height);
-  
   document.getElementById('profileBar').innerHTML = `
-    <div class="pb-item"><span>هدف</span><b>${GOAL_LABELS[p.goal]}</b></div>
-    <div class="pb-item"><span>وزن فعلی</span><b>${toFa(p.weight)} کیلو</b></div>
-    <div class="pb-item"><span>وزن هدف</span><b>${toFa(p.targetWeight)} کیلو</b></div>
+    <div class="pb-item"><span>هدف</span><b>${p.goal}</b></div>
+    <div class="pb-item"><span>سن</span><b>${toFa(p.age)}</b></div>
+    <div class="pb-item"><span>وزن</span><b>${toFa(p.weight)}kg</b></div>
     <div class="pb-item"><span>BMI</span><b>${toFa(bmi.toFixed(1))}</b></div>
-    <div class="pb-item" style="background:#eefaf6; border-color:#b8f0db;"><span>کالری روزانه</span><b style="color:#0b8f6a">${toFa(p.calorieTarget)}</b></div>
+    <div class="pb-item" style="background:#eefaf6;"><span>ساخته شده توسط</span><b style="color:#0b8f6a">هوش مصنوعی</b></div>
   `;
+  document.getElementById('headerSub').textContent = `برنامه ۳۰ روزه اختصاصی (${p.goal})`;
+
   updateAll();
 }
 
+/* =========================================================
+   Update Progress
+   ========================================================= */
 const fill = document.getElementById('fill');
 const ptext = document.getElementById('ptext');
 const ptotal = document.getElementById('ptotal');
@@ -1006,19 +889,15 @@ function updateAll(){
   document.querySelectorAll('.week').forEach(week => {
     const boxes = week.querySelectorAll('input[type="checkbox"]');
     const checked = week.querySelectorAll('input[type="checkbox"]:checked').length;
-    total += boxes.length;
-    done += checked;
+    total += boxes.length; done += checked;
     week.querySelector('.week-progress').textContent = `${toFa(checked)}/${toFa(boxes.length)}`;
-    week.classList.toggle('complete', boxes.length > 0 && checked === boxes.length);
   });
   document.querySelectorAll('.day').forEach(day => {
     const boxes = day.querySelectorAll('input[type="checkbox"]');
     const checked = day.querySelectorAll('input[type="checkbox"]:checked').length;
     const badge = day.querySelector('.dprog');
     badge.textContent = `${toFa(checked)}/${toFa(boxes.length)}`;
-    const complete = boxes.length > 0 && checked === boxes.length;
-    badge.classList.toggle('done', complete);
-    day.classList.toggle('complete', complete);
+    badge.classList.toggle('done', boxes.length > 0 && checked === boxes.length);
   });
   const pct = total ? Math.round(done / total * 100) : 0;
   fill.style.width = pct + '%';
@@ -1027,166 +906,143 @@ function updateAll(){
   ppct.textContent = toFa(pct) + '٪';
 }
 
+/* =========================================================
+   Event Listeners
+   ========================================================= */
 app.addEventListener('change', e => {
-  const cb = e.target;
-  if (cb.type !== 'checkbox' || !cb.dataset.key) return;
-  state.checks[cb.dataset.key] = cb.checked;
-  saveState();
-  updateAll();
+  if (e.target.type !== 'checkbox') return;
+  state.checks[e.target.dataset.key] = e.target.checked;
+  saveState(); updateAll();
 });
 app.addEventListener('input', e => {
-  const t = e.target;
-  if (!t.classList.contains('note')) return;
-  state.notes[t.dataset.key] = t.value;
+  if (!e.target.classList.contains('note')) return;
+  state.notes[e.target.dataset.key] = e.target.value;
   saveState();
 });
 app.addEventListener('click', e => {
   const head = e.target.closest('.week-head');
   if (head){
     const week = head.closest('.week');
-    if (!week) return;
     const w = +week.dataset.week;
     const wasOpen = week.classList.contains('open');
     document.querySelectorAll('.week').forEach(el => el.classList.remove('open'));
-    if (wasOpen){ openWeek = null; }
-    else { week.classList.add('open'); openWeek = w; }
+    if (!wasOpen){ week.classList.add('open'); openWeek = w; } else { openWeek = null; }
     return;
   }
   const chip = e.target.closest('.dchip');
   if (chip){
     const week = chip.closest('.week');
-    if (!week) return;
     const filter = chip.dataset.dayfilter;
     week.querySelectorAll('.dchip').forEach(c => c.classList.toggle('active', c === chip));
     week.querySelectorAll('.week-days .day').forEach(day => {
       const show = filter === 'all' || day.dataset.daynum === filter;
-      day.classList.toggle('hide', !show);
+      day.style.display = show ? '' : 'none';
       if (show && filter !== 'all') day.open = true;
     });
   }
 });
 
-function showSplash(){
-  splash.style.display = 'flex';
-  onboarding.hidden = true;
-  shell.hidden = true;
-  window.scrollTo({ top: 0, behavior: 'auto' });
-}
-function showOnboarding(){
-  if (state.profile){
-    const p = state.profile;
-    fHeight.value = p.height; fWeight.value = p.weight;
-    formState.goal = p.goal; formState.activity = p.activity; formState.fasting = p.fasting;
-    document.querySelectorAll('#qGoal .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.goal));
-    document.querySelectorAll('#qActivity .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.activity));
-    document.querySelectorAll('#qFasting .option-btn').forEach(b => b.classList.toggle('active', b.dataset.value === p.fasting));
-    renderFbBmi(); rebuildTargetOptions();
-    document.querySelectorAll('#qTarget .option-btn').forEach(b => {
-      b.classList.toggle('active', +b.dataset.value === p.targetWeight);
-    });
-    formState.targetWeight = p.targetWeight;
-  } else {
-    fHeight.value = ''; fWeight.value = '';
-    renderFbBmi(); rebuildTargetOptions();
-  }
-  splash.style.display = 'none';
-  onboarding.hidden = false;
-  shell.hidden = true;
-  window.scrollTo({ top: 0, behavior: 'auto' });
-}
-function showProgram(){
-  splash.style.display = 'none';
-  onboarding.hidden = true;
-  shell.hidden = false;
-  if (openWeek === null || openWeek === undefined) openWeek = 1;
-  renderProgram();
-  window.scrollTo({ top: 0, behavior: 'auto' });
-}
+/* =========================================================
+   Navigation & Build
+   ========================================================= */
+function showSplash(){ splash.style.display='flex'; onboarding.hidden=true; shell.hidden=true; window.scrollTo(0,0); }
+function showOnboarding(){ splash.style.display='none'; onboarding.hidden=false; shell.hidden=true; window.scrollTo(0,0); }
+function showProgram(){ splash.style.display='none'; onboarding.hidden=true; shell.hidden=false; renderProgram(); window.scrollTo(0,0); }
 
 document.getElementById('startBtn').addEventListener('click', () => {
-  if (state.profile) showProgram(); else showOnboarding();
+  if (state.aiPlan) showProgram(); else showOnboarding();
 });
 document.getElementById('onbBack').addEventListener('click', showSplash);
 document.getElementById('backBtn').addEventListener('click', showSplash);
 
-document.getElementById('buildBtn').addEventListener('click', () => {
+document.getElementById('buildBtn').addEventListener('click', async () => {
+  const age = parseFloat(fAge.value);
   const h = parseFloat(fHeight.value);
   const w = parseFloat(fWeight.value);
-  if (!h || h < 100 || h > 250){ alert('لطفاً قد معتبر وارد کنید (۱۰۰ تا ۲۵۰ سانتی‌متر).'); fHeight.focus(); return; }
-  if (!w || w < 30 || w > 300){ alert('لطفاً وزن معتبر وارد کنید (۳۰ تا ۳۰۰ کیلوگرم).'); fWeight.focus(); return; }
-  if (!formState.targetWeight){ alert('لطفاً وزن هدف را انتخاب کنید.'); return; }
   
+  if (!age || age < 10 || age > 100) { alert('لطفاً سن معتبر وارد کنید.'); fAge.focus(); return; }
+  if (!h || h < 100 || h > 250) { alert('لطفاً قد معتبر وارد کنید.'); fHeight.focus(); return; }
+  if (!w || w < 30 || w > 300) { alert('لطفاً وزن معتبر وارد کنید.'); fWeight.focus(); return; }
+
   state.profile = {
-    height: h, weight: w,
-    goal: formState.goal,
-    targetWeight: formState.targetWeight,
-    activity: formState.activity,
-    fasting: formState.fasting,
-    createdAt: Date.now()
+    age: age, height: h, weight: w,
+    goal: formState.goal, activity: formState.activity, fasting: formState.fasting
   };
-  
-  state.fastingEnabled = formState.fasting === '16:8' || formState.fasting === '14:10';
+  state.fastingEnabled = formState.fasting !== 'بدون فستینگ';
   state.fastingType = state.fastingEnabled ? formState.fasting : '16:8';
-  
-  openWeek = 1;
   saveState();
-  showProgram();
+
+  loadingOverlay.classList.add('show');
+  
+  try {
+    const plan = await generateWithAI(state.profile);
+    state.aiPlan = plan;
+    saveState();
+    
+    loadingOverlay.classList.remove('show');
+    openWeek = 1;
+    showProgram();
+  } catch (error) {
+    loadingOverlay.classList.remove('show');
+    alert('خطا در ساخت برنامه: \n' + error.message);
+  }
 });
 
+/* =========================================================
+   Settings Modal
+   ========================================================= */
 const fastToggle = document.getElementById('fastToggle');
 const fastType = document.getElementById('fastType');
 const fastTypeRow = document.getElementById('fastTypeRow');
+const apiKeyInput = document.getElementById('apiKeyInput');
 
 document.getElementById('settingsBtn').addEventListener('click', () => {
+  apiKeyInput.value = state.apiKey || '';
   fastToggle.checked = state.fastingEnabled;
   fastType.value = state.fastingType;
   fastTypeRow.style.display = state.fastingEnabled ? 'flex' : 'none';
   settingsModal.classList.remove('hidden');
 });
+
 document.getElementById('settingsClose').addEventListener('click', () => settingsModal.classList.add('hidden'));
-settingsModal.addEventListener('click', e => {
-  if (e.target === settingsModal) settingsModal.classList.add('hidden');
-});
-fastToggle.addEventListener('change', () => {
-  fastTypeRow.style.display = fastToggle.checked ? 'flex' : 'none';
-});
+settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); });
+fastToggle.addEventListener('change', () => { fastTypeRow.style.display = fastToggle.checked ? 'flex' : 'none'; });
+
 document.getElementById('applyBtn').addEventListener('click', () => {
+  state.apiKey = apiKeyInput.value.trim();
   state.fastingEnabled = fastToggle.checked;
   state.fastingType = fastType.value;
   saveState();
   settingsModal.classList.add('hidden');
   renderProgram();
 });
+
 document.getElementById('restartBtn').addEventListener('click', () => {
-  if (!confirm('همه اطلاعات و پیشرفت پاک شود و از ابتدا شروع کنید؟')) return;
-  state = { profile: null, fastingEnabled: false, fastingType: '16:8', checks: {}, notes: {} };
+  if (!confirm('همه اطلاعات پاک شود و از ابتدا شروع کنید؟')) return;
+  // هنگام ریست، کلید API شخصی پاک نمی‌شود تا کاربر مجبور به وارد کردن مجدد آن نباشد
+  state = { profile: null, aiPlan: null, apiKey: state.apiKey, fastingEnabled: false, fastingType: '16:8', checks: {}, notes: {} };
   saveState();
   settingsModal.classList.add('hidden');
-  openWeek = 1;
   showOnboarding();
 });
 
-const toggleBtn = document.getElementById('toggleAll');
-toggleBtn.addEventListener('click', () => {
+/* ابزارها */
+document.getElementById('toggleAll').addEventListener('click', () => {
   const visibleWeek = document.querySelector('.week.open');
   if (!visibleWeek) return;
-  const days = [...visibleWeek.querySelectorAll('.day')].filter(d => !d.classList.contains('hide'));
+  const days = [...visibleWeek.querySelectorAll('.day')].filter(d => d.style.display !== 'none');
   const allOpen = days.every(d => d.open);
   days.forEach(d => d.open = !allOpen);
-  toggleBtn.textContent = allOpen ? 'باز کردن همه' : 'بستن همه';
 });
 
 document.getElementById('reset').addEventListener('click', () => {
-  if (!confirm('همه تیک‌ها و یادداشت‌ها پاک شوند؟ (اطلاعات شخصی حفظ می‌شود)')) return;
-  state.checks = {};
-  state.notes = {};
+  if (!confirm('همه تیک‌ها و یادداشت‌ها پاک شوند؟')) return;
+  state.checks = {}; state.notes = {};
   saveState();
-  document.querySelectorAll('input[type="checkbox"][data-key]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
   document.querySelectorAll('textarea.note').forEach(t => t.value = '');
   updateAll();
 });
-
-rebuildTargetOptions();
 </script>
 </body>
 </html>
